@@ -47,25 +47,25 @@ class _UserprofileState extends State<Userprofile> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        final String userId = user.uid;
         final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('User')
-            .doc(userId)
+            .collection('Preferences')
+            .doc('preferences')
             .get();
 
         if (userDoc.exists) {
           setState(() {
-            globalUserData = userDoc.data() as Map<String, dynamic>;
-            globalloadedvariables = true;
+            globalOptions = userDoc.data() as Map<String, dynamic>;
+            globalloadedpreferences = true;
           });
+          print('feteched preferences successfully');
         } else {
-          print("No user data found in Firestore.");
+          print("No preference data found in Firestore.");
         }
       } else {
         print("No user signed in.");
       }
     } catch (e) {
-      print("Error fetching user details: $e");
+      print("Error fetching preferences details: $e");
     }
   }
 
