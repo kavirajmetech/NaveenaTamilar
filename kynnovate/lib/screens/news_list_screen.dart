@@ -5,7 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models/news_item.dart';
 import '../services/rss_service.dart';
 
-
 class NewsListScreen extends StatefulWidget {
   @override
   _NewsListScreenState createState() => _NewsListScreenState();
@@ -22,7 +21,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
   }
 
   Future<List<NewsItem>> loadRssFeeds() async {
-    final jsonString = await rootBundle.rootBundle.loadString('../RSS_Data/rssList.json');
+    final jsonString = await rootBundle.rootBundle.loadString('lib/RSS_Data/rssList.json');
     final jsonResponse = json.decode(jsonString);
     List<String> rssUrls = extractUrlsFromJson(jsonResponse);
     return _rssService.fetchMultipleRssFeeds(rssUrls);
@@ -71,14 +70,16 @@ class _NewsListScreenState extends State<NewsListScreen> {
                     },
                     child: Column(
                       children: [
-                        CachedNetworkImage(
+                        newsItem.imageUrl.isNotEmpty
+                            ? CachedNetworkImage(
                           imageUrl: newsItem.imageUrl,
                           placeholder: (context, url) => CircularProgressIndicator(),
                           errorWidget: (context, url, error) => Icon(Icons.error),
                           height: 200,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                        ),
+                        )
+                            : Container(),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
