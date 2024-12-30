@@ -24,7 +24,8 @@ class NewsItem {
       link: element.findElements('link').single.text,
       description: parsedDescription,
       imageUrl: element.findElements('media:thumbnail').isNotEmpty
-          ? element.findElements('media:thumbnail').first.getAttribute('url') ?? ''
+          ? element.findElements('media:thumbnail').first.getAttribute('url') ??
+              ''
           : '',
     );
   }

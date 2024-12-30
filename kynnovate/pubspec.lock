@@ -657,10 +657,10 @@ packages:
     dependency: "direct main"
     description:
       name: xml
-      sha256: "80d494c09849dc3f899d227a78c30c5b949b985ededf884cb3f3bcd39f4b447a"
+      sha256: "6d1e8d8641b1b4675a2f6ec0d0c6b519a472f0a4f0a2aa8a63d08b64383ee87a"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.1"
+    version: "6.0.1"
 sdks:
   dart: ">=3.4.4 <4.0.0"
   flutter: ">=3.22.0"
