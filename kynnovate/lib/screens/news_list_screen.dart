@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' as rootBundle;
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/news_item.dart';
 import '../services/rss_service.dart';
 
@@ -14,23 +17,29 @@ class _NewsListScreenState extends State<NewsListScreen> {
   @override
   void initState() {
     super.initState();
-    futureNewsItems = _rssService.fetchMultipleRssFeeds([
-      'https://www.dinakaran.com/feed/',
-      'https://timesofindia.indiatimes.com/rss.cms',
-      'https://www.thanthitv.com/feed',
-      'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
-      'https://www.indiatoday.in/rss',
-      'https://feeds.bbci.co.uk/news/world/rss.xml',
-      'https://www.hindutamil.in/rss',
-      'https://www.dinamani.com/rss',
-      'https://feeds.nbcnews.com/nbcnews/public/news',
-      'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
-      'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
-      'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
-      'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
-      'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
-      'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
-    ]);
+    futureNewsItems = loadRssFeeds();
+  }
+
+  Future<List<NewsItem>> loadRssFeeds() async {
+    final jsonString = await rootBundle.rootBundle.loadString('../RSS_Data/rssList.json');
+    final jsonResponse = json.decode(jsonString);
+    List<String> rssUrls = extractUrlsFromJson(jsonResponse);
+    return _rssService.fetchMultipleRssFeeds(rssUrls);
+  }
+
+  List<String> extractUrlsFromJson(Map<String, dynamic> jsonResponse) {
+    List<String> urls = [];
+
+    void extractUrls(dynamic value) {
+      if (value is List) {
+        urls.addAll(value.cast<String>());
+      } else if (value is Map) {
+        value.values.forEach(extractUrls);
+      }
+    }
+
+    jsonResponse.values.forEach(extractUrls);
+    return urls;
   }
 
   @override
@@ -38,6 +47,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('News List'),
+        backgroundColor: Colors.deepPurple,
       ),
       body: FutureBuilder<List<NewsItem>>(
         future: futureNewsItems,
@@ -48,12 +58,51 @@ class _NewsListScreenState extends State<NewsListScreen> {
               itemCount: newsItems.length,
               itemBuilder: (context, index) {
                 final newsItem = newsItems[index];
-                return ListTile(
-                  title: Text(newsItem.title),
-                  subtitle: Text(newsItem.description),
-                  onTap: () {
-                    // Handle tap
-                  },
+                return Card(
+                  margin: EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  elevation: 5.0,
+                  child: InkWell(
+                    onTap: () {
+                      // Handle tap
+                    },
+                    child: Column(
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: newsItem.imageUrl,
+                          placeholder: (context, url) => CircularProgressIndicator(),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                newsItem.title,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 8.0),
+                              Text(
+                                newsItem.description,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             );
