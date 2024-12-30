@@ -293,8 +293,8 @@ class _SignUpPageState extends State<SignUpPage> {
                             .set({
                           'name': globalUsername,
                           'email': email ?? "",
-                          'state': _selectedState ?? "",
-                          'district': _selectedDistrict ?? "",
+                          'state': [_selectedState] ?? [""],
+                          'district': [_selectedDistrict] ?? [""],
                           'likedcontent': [],
                           'likedauthors': [],
                           'likednewschannels': [],
