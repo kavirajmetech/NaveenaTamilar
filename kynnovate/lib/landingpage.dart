@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kynnovate/globals.dart';
 import 'package:kynnovate/pages/authentication/signin.dart';
+import 'package:kynnovate/pages/user/userprofile.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -53,7 +54,9 @@ class _HomePageState extends State<HomePage> {
         leading: IconButton(
           icon: Icon(Icons.person),
           onPressed: () {
-            // Add functionality for the user icon if needed
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => Userprofile()),
+            );
           },
         ),
         title: Text('Home Page'),
