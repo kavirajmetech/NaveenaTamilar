@@ -12,6 +12,18 @@ class NewsSlideshow extends StatefulWidget {
   _NewsSlideshowState createState() => _NewsSlideshowState();
 }
 
+<<<<<<< HEAD
+class _NewsShortRealTimeState extends State<NewsShortRealTime> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('News Shorts'),
+      ),
+      body: Center(
+        child: Text('News content goes here'),
+      ),
+=======
 class _NewsSlideshowState extends State<NewsSlideshow> {
   final FlutterTts flutterTts = FlutterTts();
   late List<String> backgroundImages;
@@ -89,6 +101,7 @@ class _NewsSlideshowState extends State<NewsSlideshow> {
           ],
         );
       },
+>>>>>>> a2755775f067a20fa461ca130ef7aa7c093fbd91
     );
   }
 }
