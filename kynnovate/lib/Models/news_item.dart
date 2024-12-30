@@ -1,6 +1,7 @@
 import 'package:xml/xml.dart' as xml;
 import 'package:html/parser.dart' as html_parser;
 
+
 class NewsItem {
   final String title;
   final String link;
