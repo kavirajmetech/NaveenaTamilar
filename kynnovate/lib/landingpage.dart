@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kynnovate/globals.dart';
 import 'package:kynnovate/pages/authentication/signin.dart';
 import 'package:kynnovate/pages/user/userprofile.dart';
+import 'package:kynnovate/screens/news_list_screen.dart'; // Ensure you import your NewsListPage here
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,8 +12,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   void _logout(BuildContext context) {
-    // Add your logout functionality here
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -71,9 +72,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Text('Welcome to the Home Page!'),
-      ),
+      body: NewsListScreen(), // Use your NewsListPage widget here
     );
   }
 }

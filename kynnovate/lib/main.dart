@@ -6,6 +6,7 @@ import 'package:kynnovate/globals.dart';
 import 'package:kynnovate/landingpage.dart';
 import 'package:kynnovate/pages/authentication/signin.dart';
 import 'package:kynnovate/pages/authentication/splashscreen.dart';
+import 'package:kynnovate/screens/news_list_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,7 @@ class _MyAppState extends State<MyApp> {
           }
           if (snapshot.hasData) {
             return HomePage();
+            // return NewsListScreen();
           } else {
             return SignInPage();
           }

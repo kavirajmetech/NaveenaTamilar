@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:xml/xml.dart' as xml;
 import '../models/news_item.dart';
-import '../services/rss_service.dart';
 
 class NewsListScreen extends StatefulWidget {
   @override
@@ -8,13 +9,41 @@ class NewsListScreen extends StatefulWidget {
 }
 
 class _NewsListScreenState extends State<NewsListScreen> {
-  final RssService _rssService = RssService();
   late Future<List<NewsItem>> futureNewsItems;
+
+  /// Fetch RSS feed from a single URL and parse it into a list of NewsItem
+  Future<List<NewsItem>> fetchRssFeed(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final document = xml.XmlDocument.parse(response.body);
+        final items = document.findAllElements('item');
+        return items.map((element) => NewsItem.fromXml(element)).toList();
+      } else {
+        print(
+            'Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching RSS feed from $url: $e');
+      return [];
+    }
+  }
+
+  /// Fetch multiple RSS feeds from a list of URLs
+  Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
+    List<NewsItem> allNewsItems = [];
+    for (String url in urls) {
+      final newsItems = await fetchRssFeed(url);
+      allNewsItems.addAll(newsItems);
+    }
+    return allNewsItems;
+  }
 
   @override
   void initState() {
     super.initState();
-    futureNewsItems = _rssService.fetchMultipleRssFeeds([
+    futureNewsItems = fetchMultipleRssFeeds([
       'https://www.dinakaran.com/feed/',
       'https://timesofindia.indiatimes.com/rss.cms',
       'https://www.thanthitv.com/feed',
@@ -42,7 +71,15 @@ class _NewsListScreenState extends State<NewsListScreen> {
       body: FutureBuilder<List<NewsItem>>(
         future: futureNewsItems,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Failed to load news: ${snapshot.error}'),
+            );
+          } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+            return Center(child: Text('No news available.'));
+          } else if (snapshot.hasData) {
             final newsItems = snapshot.data!;
             return ListView.builder(
               itemCount: newsItems.length,
@@ -51,17 +88,12 @@ class _NewsListScreenState extends State<NewsListScreen> {
                 return ListTile(
                   title: Text(newsItem.title),
                   subtitle: Text(newsItem.description),
-                  onTap: () {
-                    // Handle tap
-                  },
                 );
               },
             );
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Center(child: Text('Unknown error occurred.'));
           }
-
-          return Center(child: CircularProgressIndicator());
         },
       ),
     );
