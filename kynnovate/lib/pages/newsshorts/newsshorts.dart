@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+<<<<<<< HEAD
 import 'package:kynnovate/Models/news_item.dart';
 import 'api_service.dart';
+=======
+import 'news_item.dart';
+import 'api_service.dart'; // Import the API service
+>>>>>>> b23ac60b50449ea5360632d99af2b596a537a7c2
 
 class NewsSlideshow extends StatefulWidget {
   final List<NewsItem> articles;
@@ -31,7 +36,7 @@ class _NewsSlideshowState extends State<NewsSlideshow> {
         images.add(imageUrl);
       } catch (e) {
         print('Error fetching image for ${article.title}: $e');
-        images.add(''); // Placeholder for error
+        images.add('assets/signup.png'); // Use fallback image on error
       }
     }
     setState(() {
@@ -62,7 +67,9 @@ class _NewsSlideshowState extends State<NewsSlideshow> {
             Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(backgroundImages[index]),
+                  image: backgroundImages[index].startsWith('http')
+                      ? NetworkImage(backgroundImages[index])
+                      : AssetImage(backgroundImages[index]) as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),
