@@ -111,6 +111,7 @@ class NewsListScreen extends StatefulWidget {
   _NewsListScreenState createState() => _NewsListScreenState();
 }
 
+
 class _NewsListScreenState extends State<NewsListScreen> {
   late Future<List<NewsItem>> futureNewsItems;
 
@@ -169,7 +170,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('News List'),
+        title: Text('News'),
       ),
       body: FutureBuilder<List<NewsItem>>(
         future: futureNewsItems,
