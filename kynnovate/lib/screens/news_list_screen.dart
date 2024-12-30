@@ -8,6 +8,7 @@ class NewsListScreen extends StatefulWidget {
   _NewsListScreenState createState() => _NewsListScreenState();
 }
 
+
 class _NewsListScreenState extends State<NewsListScreen> {
   late Future<List<NewsItem>> futureNewsItems;
 
