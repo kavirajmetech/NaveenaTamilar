@@ -1,10 +1,9 @@
-// lib/services/rss_service.dart
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
 import '../models/news_item.dart';
 
 class RssService {
-  static Future<List<NewsItem>> fetchRssFeed(String url) async {
+  Future<List<NewsItem>> fetchRssFeed(String url) async {
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -14,5 +13,14 @@ class RssService {
     } else {
       throw Exception('Failed to load RSS feed');
     }
+  }
+
+  Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
+    List<NewsItem> allNewsItems = [];
+    for (String url in urls) {
+      final newsItems = await fetchRssFeed(url);
+      allNewsItems.addAll(newsItems);
+    }
+    return allNewsItems;
   }
 }

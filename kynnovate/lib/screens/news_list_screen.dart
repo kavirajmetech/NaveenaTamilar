@@ -1,4 +1,3 @@
-// lib/screens/news_list_screen.dart
 import 'package:flutter/material.dart';
 import '../models/news_item.dart';
 import '../services/rss_service.dart';
@@ -9,12 +8,29 @@ class NewsListScreen extends StatefulWidget {
 }
 
 class _NewsListScreenState extends State<NewsListScreen> {
+  final RssService _rssService = RssService();
   late Future<List<NewsItem>> futureNewsItems;
 
   @override
   void initState() {
     super.initState();
-    futureNewsItems = RssService.fetchRssFeed('https://www.dinamani.com/api/v1/collections/cinema-news-cinema.rss');
+    futureNewsItems = _rssService.fetchMultipleRssFeeds([
+      'https://www.dinakaran.com/feed/',
+      'https://timesofindia.indiatimes.com/rss.cms',
+      'https://www.thanthitv.com/feed',
+      'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
+      'https://www.indiatoday.in/rss',
+      'https://feeds.bbci.co.uk/news/world/rss.xml',
+      'https://www.hindutamil.in/rss',
+      'https://www.dinamani.com/rss',
+      'https://feeds.nbcnews.com/nbcnews/public/news',
+      'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
+      'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
+      'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
+      'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
+      'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
+      'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
+    ]);
   }
 
   @override
