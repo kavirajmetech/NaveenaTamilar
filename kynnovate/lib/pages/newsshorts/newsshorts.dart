@@ -7,12 +7,15 @@ class NewsShortRealTime extends StatefulWidget {
 }
 
 class _NewsShortRealTimeState extends State<NewsShortRealTime> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('News Shorts'),
       ),
-}
+      body: Center(
+        child: Text('News content goes here'),
+      ),
+    );
+  }
 }

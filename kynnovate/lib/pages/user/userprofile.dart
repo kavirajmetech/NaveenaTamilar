@@ -43,36 +43,138 @@ class _UserprofileState extends State<Userprofile> {
     }
   }
 
+  Future<void> _fetchUserPreferences() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final String userId = user.uid;
+        final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('User')
+            .doc(userId)
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            globalUserData = userDoc.data() as Map<String, dynamic>;
+            globalloadedvariables = true;
+          });
+        } else {
+          print("No user data found in Firestore.");
+        }
+      } else {
+        print("No user signed in.");
+      }
+    } catch (e) {
+      print("Error fetching user details: $e");
+    }
+  }
+
   void _showDropdownPopup(String title, List<dynamic> items, String key) {
+    TextEditingController searchController = TextEditingController();
+    List<dynamic> filteredItems = List.from(items);
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(title),
-          content: items.isNotEmpty
-              ? SizedBox(
-                  width: double.maxFinite,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(items[index]),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            _removeItemFromList(key, items[index]);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                )
-              : Text('No items available'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Search Bar
+              TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  labelText: 'Search...',
+                  prefixIcon: Icon(Icons.search),
+                ),
+                onChanged: (query) {
+                  setState(() {
+                    filteredItems = items
+                        .where((item) => item
+                            .toString()
+                            .toLowerCase()
+                            .contains(query.toLowerCase()))
+                        .toList();
+                  });
+                },
+              ),
+              // Display items
+              filteredItems.isNotEmpty
+                  ? SizedBox(
+                      width: double.maxFinite,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(filteredItems[index].toString()),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                _removeItemFromList(key, filteredItems[index]);
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : Text('No items available'),
+            ],
+          ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               child: Text("Close"),
+            ),
+            TextButton(
+              onPressed: () {
+                // Add new item functionality
+                _showAddItemDialog(title, key);
+              },
+              child: Text("Add preferences"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// Function to handle the addition of new item to the corresponding list
+  void _showAddItemDialog(String title, String key) {
+    TextEditingController newItemController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Add New $title'),
+          content: TextField(
+            controller: newItemController,
+            decoration: InputDecoration(
+              labelText: 'New Item',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                String newItem = newItemController.text.trim();
+                if (newItem.isNotEmpty) {
+                  setState(() {
+                    globalUserData[title].add(newItem);
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text("Add"),
             ),
           ],
         );
@@ -106,6 +208,42 @@ class _UserprofileState extends State<Userprofile> {
       print("Error removing item: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to remove $item')),
+      );
+    }
+  }
+
+  Future<void> _addItemToList(String key, String newItem) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final String userId = user.uid;
+
+        // Fetch the current list from globalUserData
+        List<dynamic> updatedList = globalUserData[key] ?? [];
+
+        // Add the new item to the list
+        updatedList.add(newItem);
+
+        // Update the list in Firebase
+        await FirebaseFirestore.instance
+            .collection('User')
+            .doc(userId)
+            .update({key: updatedList});
+
+        // Update the local data as well
+        setState(() {
+          globalUserData[key] = updatedList;
+        });
+
+        Navigator.of(context).pop(); // Close the popup
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$newItem added successfully')),
+        );
+      }
+    } catch (e) {
+      print("Error adding item: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add $newItem')),
       );
     }
   }
@@ -160,38 +298,63 @@ class _UserprofileState extends State<Userprofile> {
                       _buildInfoCard(
                         icon: Icons.location_city,
                         color: Colors.orange,
-                        label: 'State',
-                        value: globalUserData['state'] ?? 'Not Available',
+                        label: 'States',
+                        value: (globalUserData['state'] is List
+                            ? (globalUserData['state'] as List).join(', ')
+                            : globalUserData['state'] ?? 'Not Available'),
+                        onTap: () {
+                          _showDropdownPopup(
+                              'States', globalUserData['state'] ?? [], 'state');
+                        },
                       ),
                       _buildInfoCard(
                         icon: Icons.map,
                         color: Colors.green,
-                        label: 'District',
-                        value: globalUserData['district'] ?? 'Not Available',
+                        label: 'Districts',
+                        value: (globalUserData['district'] is List
+                            ? (globalUserData['district'] as List).join(', ')
+                            : globalUserData['district'] ?? 'Not Available'),
+                        onTap: () {
+                          _showDropdownPopup('Districts',
+                              globalUserData['district'] ?? [], 'district');
+                        },
                       ),
                       _buildInfoCard(
                         icon: Icons.comment,
                         color: Colors.indigo,
                         label: 'Comments',
-                        value:
-                            (globalUserData['comments'] as List?)?.join(', ') ??
-                                'No Comments',
+                        value: (globalUserData['comments'] is List
+                            ? (globalUserData['comments'] as List).join(', ')
+                            : globalUserData['comments'] ?? 'No Comments'),
+                        onTap: () {
+                          _showDropdownPopup('Comments',
+                              globalUserData['comments'] ?? [], 'comments');
+                        },
                       ),
                       _buildInfoCard(
                         icon: Icons.subscriptions,
                         color: Colors.cyan,
                         label: 'Subscriptions',
-                        value: (globalUserData['subscription'] as List?)
-                                ?.join(', ') ??
-                            'No Subscriptions',
+                        value: (globalUserData['subscription'] is List
+                            ? (globalUserData['subscription'] as List)
+                                .join(', ')
+                            : globalUserData['subscription'] ??
+                                'No Subscriptions'),
+                        onTap: () {
+                          _showDropdownPopup(
+                              'Subscriptions',
+                              globalUserData['subscriptions'] ?? [],
+                              'subscriptions');
+                        },
                       ),
                       _buildInfoCard(
                         icon: Icons.thumb_up_alt_rounded,
                         color: Colors.blue,
                         label: 'Liked Content',
-                        value: (globalUserData['likedcontent'] as List?)
-                                ?.join(', ') ??
-                            'No Likes',
+                        value: (globalUserData['likedcontent'] is List
+                            ? (globalUserData['likedcontent'] as List)
+                                .join(', ')
+                            : globalUserData['likedcontent'] ?? 'No Likes'),
                         onTap: () {
                           _showDropdownPopup(
                               'Liked Content',
@@ -203,9 +366,10 @@ class _UserprofileState extends State<Userprofile> {
                         icon: Icons.person,
                         color: Colors.purple,
                         label: 'Liked Authors',
-                        value: (globalUserData['likedauthors'] as List?)
-                                ?.join(', ') ??
-                            'No Authors',
+                        value: (globalUserData['likedauthors'] is List
+                            ? (globalUserData['likedauthors'] as List)
+                                .join(', ')
+                            : globalUserData['likedauthors'] ?? 'No Authors'),
                         onTap: () {
                           _showDropdownPopup(
                               'Liked Authors',
@@ -217,9 +381,11 @@ class _UserprofileState extends State<Userprofile> {
                         icon: Icons.tv,
                         color: Colors.red,
                         label: 'Liked Channels',
-                        value: (globalUserData['likednewschannels'] as List?)
-                                ?.join(', ') ??
-                            'No Channels',
+                        value: (globalUserData['likednewschannels'] is List
+                            ? (globalUserData['likednewschannels'] as List)
+                                .join(', ')
+                            : globalUserData['likednewschannels'] ??
+                                'No Channels'),
                         onTap: () {
                           _showDropdownPopup(
                               'Liked Channels',
