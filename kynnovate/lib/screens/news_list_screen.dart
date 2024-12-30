@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' as rootBundle;
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:http/http.dart' as http;
+import 'package:xml/xml.dart' as xml;
 import '../models/news_item.dart';
-import '../services/rss_service.dart';
 
 class NewsListScreen extends StatefulWidget {
   @override
@@ -11,10 +9,9 @@ class NewsListScreen extends StatefulWidget {
 }
 
 class _NewsListScreenState extends State<NewsListScreen> {
-  final RssService _rssService = RssService();
   late Future<List<NewsItem>> futureNewsItems;
 
-<<<<<<< HEAD
+  /// Fetch RSS feed from a single URL and parse it into a list of NewsItem
   Future<List<NewsItem>> fetchRssFeed(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
@@ -33,6 +30,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
     }
   }
 
+  /// Fetch multiple RSS feeds from a list of URLs
   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
     List<NewsItem> allNewsItems = [];
     for (String url in urls) {
@@ -42,34 +40,26 @@ class _NewsListScreenState extends State<NewsListScreen> {
     return allNewsItems;
   }
 
-=======
->>>>>>> c3a4afec79065a861a633dacb7f4c39c654976f6
   @override
   void initState() {
     super.initState();
-    futureNewsItems = loadRssFeeds();
-  }
-
-  Future<List<NewsItem>> loadRssFeeds() async {
-    final jsonString = await rootBundle.rootBundle.loadString('lib/RSS_Data/rssList.json');
-    final jsonResponse = json.decode(jsonString);
-    List<String> rssUrls = extractUrlsFromJson(jsonResponse);
-    return _rssService.fetchMultipleRssFeeds(rssUrls);
-  }
-
-  List<String> extractUrlsFromJson(Map<String, dynamic> jsonResponse) {
-    List<String> urls = [];
-
-    void extractUrls(dynamic value) {
-      if (value is List) {
-        urls.addAll(value.cast<String>());
-      } else if (value is Map) {
-        value.values.forEach(extractUrls);
-      }
-    }
-
-    jsonResponse.values.forEach(extractUrls);
-    return urls;
+    futureNewsItems = fetchMultipleRssFeeds([
+      'https://www.dinakaran.com/feed/',
+      'https://timesofindia.indiatimes.com/rss.cms',
+      'https://www.thanthitv.com/feed',
+      'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
+      'https://www.indiatoday.in/rss',
+      'https://feeds.bbci.co.uk/news/world/rss.xml',
+      'https://www.hindutamil.in/rss',
+      'https://www.dinamani.com/rss',
+      'https://feeds.nbcnews.com/nbcnews/public/news',
+      'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
+      'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
+      'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
+      'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
+      'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
+      'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
+    ]);
   }
 
   @override
@@ -77,72 +67,33 @@ class _NewsListScreenState extends State<NewsListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('News List'),
-        backgroundColor: Colors.deepPurple,
       ),
       body: FutureBuilder<List<NewsItem>>(
         future: futureNewsItems,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Failed to load news: ${snapshot.error}'),
+            );
+          } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+            return Center(child: Text('No news available.'));
+          } else if (snapshot.hasData) {
             final newsItems = snapshot.data!;
             return ListView.builder(
               itemCount: newsItems.length,
               itemBuilder: (context, index) {
                 final newsItem = newsItems[index];
-                return Card(
-                  margin: EdgeInsets.all(10.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  elevation: 5.0,
-                  child: InkWell(
-                    onTap: () {
-                      // Handle tap
-                    },
-                    child: Column(
-                      children: [
-                        newsItem.imageUrl.isNotEmpty
-                            ? CachedNetworkImage(
-                          imageUrl: newsItem.imageUrl,
-                          placeholder: (context, url) => CircularProgressIndicator(),
-                          errorWidget: (context, url, error) => Icon(Icons.error),
-                          height: 200,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        )
-                            : Container(),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                newsItem.title,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 8.0),
-                              Text(
-                                newsItem.description,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                return ListTile(
+                  title: Text(newsItem.title),
+                  subtitle: Text(newsItem.description),
                 );
               },
             );
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Center(child: Text('Unknown error occurred.'));
           }
-
-          return Center(child: CircularProgressIndicator());
         },
       ),
     );
