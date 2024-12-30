@@ -3,3 +3,4 @@ import 'package:flutter/material.dart';
 
 String? globalUserId;
 String? globalUsername;
+int? globaltheme = 1;

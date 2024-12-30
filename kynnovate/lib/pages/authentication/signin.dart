@@ -1,7 +1,7 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
 // import 'signup.dart';
-// import 'splashscreen.dart'; // Import the SplashScreen
+// import 'splashscreen.dart';
 
 // class SignInPage extends StatefulWidget {
 //   @override
