@@ -11,7 +11,6 @@ class NewsListScreen extends StatefulWidget {
 class _NewsListScreenState extends State<NewsListScreen> {
   late Future<List<NewsItem>> futureNewsItems;
 
-  /// Fetch RSS feed from a single URL and parse it into a list of NewsItem
   Future<List<NewsItem>> fetchRssFeed(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
@@ -30,7 +29,6 @@ class _NewsListScreenState extends State<NewsListScreen> {
     }
   }
 
-  /// Fetch multiple RSS feeds from a list of URLs
   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
     List<NewsItem> allNewsItems = [];
     for (String url in urls) {
