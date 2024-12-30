@@ -169,7 +169,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('News List'),
+        title: Text('News'),
       ),
       body: FutureBuilder<List<NewsItem>>(
         future: futureNewsItems,
