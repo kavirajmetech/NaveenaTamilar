@@ -1,0 +1,49 @@
+{
+  "categories": {
+    "Entertainment": [
+      "https://www.vikatan.com/stories.rss?section-id=8956&time-period=last-24-hours"
+    ],
+    "Cinema": [
+      "https://www.vikatan.com/api/v1/collections/kollywood-entertainment.rss?&time-period=last-24-hours"
+    ],
+    "News": {
+      "India": [
+        "https://www.vikatan.com/api/v1/collections/india-news.rss?&time-period=last-24-hours"
+      ],
+      "World": [
+        "https://www.vikatan.com/api/v1/collections/international.rss?&time-period=last-24-hours"
+      ]
+    },
+    "Economics": [
+      "https://www.vikatan.com/stories.rss?section=business&time-period=last-24-hours"
+    ],
+    "General": [
+      "https://www.dinakaran.com/feed/",
+      "https://timesofindia.indiatimes.com/rss.cms",
+      "https://www.thanthitv.com/feed",
+      "https://timesofindia.indiatimes.com/rssfeeds/1221656.cms",
+      "https://www.indiatoday.in/rss",
+      "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "https://www.hindutamil.in/rss",
+      "https://www.dinamani.com/rss",
+      "https://feeds.nbcnews.com/nbcnews/public/news"
+    ],
+    "Technology": [
+      "https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml"
+    ],
+    "Weather": [
+      "https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml"
+    ],
+    "Cricket": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml"
+    ],
+    "Regional": {
+      "Virudhunagar": [
+        "https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml"
+      ],
+      "Chennai": [
+        "https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml"
+      ]
+    }
+  }
+}
