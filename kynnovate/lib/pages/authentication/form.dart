@@ -111,8 +111,8 @@ class _CollectDetailsState extends State<CollectDetails> {
                       .set({
                     'name': globalUsername,
                     'email': globalEmail ?? "",
-                    'state': _selectedState,
-                    'district': _selectedDistrict,
+                    'state': [_selectedState],
+                    'district': [_selectedDistrict],
                     'likedcontent': [],
                     'likedauthors': [],
                     'likednewschannels': [],
