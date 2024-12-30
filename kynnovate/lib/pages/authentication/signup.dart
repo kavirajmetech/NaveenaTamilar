@@ -18,20 +18,15 @@ class _SignUpPageState extends State<SignUpPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  String _selectedState = "Select State"; // Dropdown value for state
-  String _selectedDistrict = "Select District"; // Dropdown value for district
-  List<String> states = [
-    "Select State",
-    "State 1",
-    "State 2",
-    "State 3"
-  ]; // Example states
+  String _selectedState = "Select State";
+  String _selectedDistrict = "Select District";
+  List<String> states = ["Select State", "State 1", "State 2", "State 3"];
   List<String> districts = [
     "Select District",
     "District 1",
     "District 2",
     "District 3"
-  ]; // Example districts
+  ];
 
   Future<void> _signInWithGoogle() async {
     try {
@@ -62,13 +57,10 @@ class _SignUpPageState extends State<SignUpPage> {
           'name': name ?? "Anonymous",
           'email': email ?? "",
           'likes': [],
-          'favourites': [],
           'authors': [],
           'newschannels': [],
           'profileImageUrl': user.photoURL ?? "",
-          'contributions': [],
-          'verifications': [],
-          'discussions': [],
+          'comments': []
         });
 
         print("User signed in with Google: $name ($email)");
