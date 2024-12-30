@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:kynnovate/globals.dart';
+import 'package:kynnovate/pages/authentication/splashscreen.dart';
 
 class CollectDetails extends StatefulWidget {
   @override
@@ -100,18 +103,28 @@ class _CollectDetailsState extends State<CollectDetails> {
 
               // Submit Button
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Collect all the details (e.g., from controllers and dropdowns)
-                  final firstName = _firstNameController.text;
-                  final lastName = _lastNameController.text;
-                  final state = _selectedState;
-                  final district = _selectedDistrict;
+                  await FirebaseFirestore.instance
+                      .collection('User')
+                      .doc(globalUserId)
+                      .set({
+                    'name': globalUsername,
+                    'email': globalEmail ?? "",
+                    'state': _selectedState,
+                    'district': _selectedDistrict,
+                    'likedcontent': [],
+                    'likedauthors': [],
+                    'likednewschannels': [],
+                    'profileImageUrl': "",
+                    'comments': [],
+                    'subscriptions': []
+                  });
 
-                  // Handle form submission
-                  print('First Name: $firstName');
-                  print('Last Name: $lastName');
-                  print('State: $state');
-                  print('District: $district');
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SplashScreen()),
+                  );
 
                   // Navigate to the next page or perform other actions
                   // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NextPage()));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:kynnovate/globals.dart';
 import 'package:kynnovate/pages/authentication/form.dart';
 import 'splashscreen.dart';
 
@@ -49,21 +50,9 @@ class _SignUpPageState extends State<SignUpPage> {
       final User? user = userCredential.user;
 
       if (user != null) {
-        final String userId = user.uid;
-        final String? name = user.displayName;
-        final String? email = user.email;
-
-        await FirebaseFirestore.instance.collection('User').doc(userId).set({
-          'name': name ?? "Anonymous",
-          'email': email ?? "",
-          'likes': [],
-          'authors': [],
-          'newschannels': [],
-          'profileImageUrl': user.photoURL ?? "",
-          'comments': []
-        });
-
-        print("User signed in with Google: $name ($email)");
+        globalUserId = user.uid;
+        globalUsername = user.displayName;
+        globalEmail = user.email;
 
         Navigator.pushReplacement(
           context,
@@ -295,21 +284,23 @@ class _SignUpPageState extends State<SignUpPage> {
                           password: password,
                         );
 
-                        final String userId = userCredential.user!.uid;
-
-                        // Insert data into User collection
+                        globalUserId = userCredential.user!.uid;
+                        globalUsername = "$firstName $lastName";
+                        globalEmail = email;
                         await FirebaseFirestore.instance
                             .collection('User')
-                            .doc(userId)
+                            .doc(globalUserId)
                             .set({
-                          'name': "$firstName $lastName",
-                          'email': email,
-                          'likes': [],
-                          'favourites': [],
+                          'name': globalUsername,
+                          'email': email ?? "",
+                          'state': _selectedState ?? "",
+                          'district': _selectedDistrict ?? "",
+                          'likedcontent': [],
+                          'likedauthors': [],
+                          'likednewschannels': [],
                           'profileImageUrl': "",
-                          'contributions': [],
-                          'verifications': [],
-                          'discussions': []
+                          'comments': [],
+                          'subscriptions': []
                         });
 
                         Navigator.pushReplacement(
