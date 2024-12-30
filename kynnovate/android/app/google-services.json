@@ -12,7 +12,20 @@
           "package_name": "com.example.kynnovate"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "402321590133-blh4n8enubfohv2jv7jcfdgtn0f9km75.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kynnovate",
+            "certificate_hash": "f45e653dbed3d11db0f4ac5ae160c35fa8a7d786"
+          }
+        },
+        {
+          "client_id": "402321590133-g4pn22081cq6o6dmubcrvqh0cbidosc9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCH9iQD0IqhEHpTeu54nU3ddBvn2qUp4FE"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "402321590133-g4pn22081cq6o6dmubcrvqh0cbidosc9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
