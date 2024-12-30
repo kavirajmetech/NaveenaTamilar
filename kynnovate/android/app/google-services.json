@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "402321590133",
+    "project_id": "kynnovate",
+    "storage_bucket": "kynnovate.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402321590133:android:60bbe9968189784aa8353c",
+        "android_client_info": {
+          "package_name": "com.example.kynnovate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH9iQD0IqhEHpTeu54nU3ddBvn2qUp4FE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
