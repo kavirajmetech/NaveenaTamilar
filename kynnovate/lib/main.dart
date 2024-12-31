@@ -61,6 +61,7 @@ import 'package:kynnovate/landingpage.dart';
 import 'package:kynnovate/pages/authentication/signin.dart';
 import 'package:kynnovate/pages/authentication/splashscreen.dart';
 import 'package:kynnovate/screens/news_list_screen.dart';
+import 'screens/slideshow_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -103,6 +104,7 @@ class _MyAppState extends State<MyApp> {
           }
           if (snapshot.hasData) {
             return HomePage(toggleTheme: toggleTheme);
+            //return HomePage(slideshowScreen: SlideshowScreen(), toggleTheme: toggleTheme);
           } else {
             return SignInPage();
           }

@@ -87,11 +87,12 @@ import 'package:flutter/material.dart';
 import 'package:kynnovate/pages/authentication/signin.dart';
 import 'package:kynnovate/pages/user/userprofile.dart';
 import 'package:kynnovate/screens/news_list_screen.dart';
+import 'package:kynnovate/screens/slideshow_screen.dart';
 
 class HomePage extends StatefulWidget {
   final Function toggleTheme;
 
-  HomePage({required this.toggleTheme});
+  HomePage({required this.toggleTheme, required SlideshowScreen slideshowScreen});
 
   @override
   _HomePageState createState() => _HomePageState();

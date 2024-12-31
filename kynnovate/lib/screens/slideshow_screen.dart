@@ -1,3 +1,5 @@
+// lib/screens/slideshow_screen.dart
+
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -114,7 +116,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     final directory = await getApplicationDocumentsDirectory();
     String path = '${directory.path}/${text.hashCode}.mp3';
     if (File(path).existsSync()) {
-      await audioPlayer.play(path, isLocal: true);
+      await audioPlayer.play("assets/audio/sample.mp3");
     } else {
       print("Audio file not found: $path");
     }
