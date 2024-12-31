@@ -64,7 +64,6 @@ import 'package:kynnovate/pages/children/childrennews.dart';
 import 'package:kynnovate/screens/news_list_screen.dart';
 import 'package:kynnovate/screens/slideshow_screen.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -105,7 +104,7 @@ class _MyAppState extends State<MyApp> {
             return SplashScreen();
           }
           if (snapshot.hasData) {
-            return HomePage(toggleTheme: toggleTheme, slideshowScreen: SlideshowScreen());
+            return HomePage(toggleTheme: toggleTheme);
             // return KidsNewsPage();
             // return SlideshowScreen();
           } else {

@@ -5,7 +5,9 @@ import 'package:kynnovate/globals.dart';
 import 'package:kynnovate/pages/authentication/signin.dart';
 import 'package:kynnovate/pages/children/childrennews.dart';
 import 'package:kynnovate/pages/user/userprofile.dart';
+import 'package:kynnovate/screens/meme_page.dart';
 import 'package:kynnovate/screens/news_list_screen.dart';
+import 'package:kynnovate/screens/slideshow_screen.dart';
 
 String globalLanguageOption = 'English'; // Default global language option
 
@@ -27,8 +29,8 @@ class _HomePageState extends State<HomePage> {
     NewsListScreen(), // Home
     KidsNewsPage(), // Replace with your Search Page
     Center(child: Text("Favorites Page")),
-    Center(child: Text("Favorites Page")), // Replace with your Favorites Page
-    Userprofile(), // Profile
+    SlideshowScreen(), // Replace with your Favorites Page
+    MemePage(), // Profile
   ];
 
   Future<void> _logout(BuildContext context) async {
@@ -166,13 +168,13 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Colors.blueGrey,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.short_text),
+            icon: Icon(Icons.video_call),
             label: 'Shorts',
             backgroundColor: Colors.blueGrey,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Preparation',
+            icon: Icon(Icons.emoji_emotions),
+            label: 'Memes',
             backgroundColor: Colors.blueGrey,
           ),
         ],
