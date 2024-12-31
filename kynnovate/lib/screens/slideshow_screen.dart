@@ -43,6 +43,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
     ]);
 
+
     List<NewsItem> fetchedArticles = fetchRandomNews(allNews);
 
     for (var article in fetchedArticles) {
