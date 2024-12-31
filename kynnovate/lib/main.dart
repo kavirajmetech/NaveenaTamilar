@@ -63,6 +63,7 @@ import 'package:kynnovate/pages/authentication/splashscreen.dart';
 import 'package:kynnovate/pages/children/childrennews.dart';
 import 'package:kynnovate/screens/news_list_screen.dart';
 import 'package:kynnovate/screens/slideshow_screen.dart';
+import 'package:kynnovate/screens/meme_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -104,9 +105,10 @@ class _MyAppState extends State<MyApp> {
             return SplashScreen();
           }
           if (snapshot.hasData) {
-            return HomePage(toggleTheme: toggleTheme, slideshowScreen: SlideshowScreen());
+            //return HomePage(toggleTheme: toggleTheme, slideshowScreen: SlideshowScreen());
             // return KidsNewsPage();
             // return SlideshowScreen();
+            return MemePage();
           } else {
             return SignInPage();
           }
