@@ -107,11 +107,8 @@ class _MyAppState extends State<MyApp> {
             return SplashScreen();
           }
           if (snapshot.hasData) {
-<<<<<<< HEAD
             return HomePage(toggleTheme: toggleTheme);
-=======
             // return HomePage(toggleTheme: toggleTheme);
->>>>>>> 9f31e0fb7b7eda758796b8efc1631ffcb6522e45
             // return KidsNewsPage();
             return SlideshowScreen();
           } else {
