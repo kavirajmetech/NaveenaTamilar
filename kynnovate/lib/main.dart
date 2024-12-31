@@ -64,6 +64,7 @@ import 'package:kynnovate/pages/children/childrennews.dart';
 import 'package:kynnovate/screens/news_list_screen.dart';
 import 'package:kynnovate/screens/slideshow_screen.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
