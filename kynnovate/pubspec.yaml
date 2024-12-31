@@ -80,6 +80,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+    - assets/images/politics.png
+    - assets/images/entertainment.png
+    - assets/images/sports.png
+    - assets/images/business.png
     - assets/
     # - assets/images/
     # - assets/icons/

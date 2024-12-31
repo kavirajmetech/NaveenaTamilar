@@ -18,6 +18,7 @@
       "https://www.vikatan.com/stories.rss?section=business&time-period=last-24-hours"
     ],
     "General": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/live-updates.xml",
       "https://www.dinakaran.com/feed/",
       "https://timesofindia.indiatimes.com/rss.cms",
       "https://www.thanthitv.com/feed",
