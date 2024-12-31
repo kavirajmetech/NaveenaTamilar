@@ -10,13 +10,6 @@ class NewsListScreen extends StatefulWidget {
 
 class _NewsListScreenState extends State<NewsListScreen> {
   late Future<List<NewsItem>> futureNewsItems;
-<<<<<<< HEAD
-  late Future<List<NewsItem>> latestItems;
-  bool isLoading = true;
-  String errorMessage = '';
-
-=======
->>>>>>> c8b3bea7da634cad8d8ff6b835f284b2483a5761
   Future<List<NewsItem>> fetchRssFeed(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
