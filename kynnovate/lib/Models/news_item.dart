@@ -1,7 +1,6 @@
 import 'package:xml/xml.dart' as xml;
 import 'package:html/parser.dart' as html_parser;
 
-
 class NewsItem {
   final String title;
   final String link;
@@ -23,10 +22,15 @@ class NewsItem {
       title: element.findElements('title').single.text,
       link: element.findElements('link').single.text,
       description: parsedDescription,
-      imageUrl: element.findElements('media:thumbnail').isNotEmpty
-          ? element.findElements('media:thumbnail').first.getAttribute('url') ??
-              ''
-          : '',
+      imageUrl: element.findElements('thumbimage').isNotEmpty
+          ? element.findElements('thumbimage').first.text
+          : element.findElements('media:thumbnail').isNotEmpty
+              ? element.findElements('media:thumbnail').first.getAttribute('url') ?? ''
+              : element.findElements('image').isNotEmpty
+                  ? element.findElements('image').first.findElements('url').isNotEmpty
+                      ? element.findElements('image').first.findElements('url').single.text
+                      : ''
+                  : '',
     );
   }
 
