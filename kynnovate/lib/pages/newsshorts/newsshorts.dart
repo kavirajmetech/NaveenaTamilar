@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'news_item.dart';
-import 'api_service.dart'; // Import the API service
+import 'package:kynnovate/Models/news_item.dart';
+import 'api_service.dart';
 
 class NewsSlideshow extends StatefulWidget {
   final List<NewsItem> articles;
@@ -12,16 +12,6 @@ class NewsSlideshow extends StatefulWidget {
   _NewsSlideshowState createState() => _NewsSlideshowState();
 }
 
-class _NewsShortRealTimeState extends State<NewsShortRealTime> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('News Shorts'),
-      ),
-      body: Center(
-        child: Text('News content goes here'),
-      ),
 class _NewsSlideshowState extends State<NewsSlideshow> {
   final FlutterTts flutterTts = FlutterTts();
   late List<String> backgroundImages;
@@ -41,7 +31,7 @@ class _NewsSlideshowState extends State<NewsSlideshow> {
         images.add(imageUrl);
       } catch (e) {
         print('Error fetching image for ${article.title}: $e');
-        images.add('assets/signup.png'); // Use fallback image on error
+        images.add('assets/signup.png');
       }
     }
     setState(() {
@@ -88,7 +78,8 @@ class _NewsSlideshowState extends State<NewsSlideshow> {
                   children: [
                     Text(
                       widget.articles[index].title,
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
                     Text(widget.articles[index].description),

@@ -3,15 +3,215 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kynnovate/globals.dart';
 
+import 'package:flutter/material.dart';
+
+class AddItemDialog extends StatefulWidget {
+  final String title;
+  final String keyName;
+  final List<String> initialOptions;
+  final Function(String) onAddItem;
+
+  const AddItemDialog({
+    Key? key,
+    required this.title,
+    required this.keyName,
+    required this.initialOptions,
+    required this.onAddItem,
+  }) : super(key: key);
+
+  @override
+  _AddItemDialogState createState() => _AddItemDialogState();
+}
+
+class _AddItemDialogState extends State<AddItemDialog> {
+  late List<String> filteredOptions;
+  late TextEditingController searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    filteredOptions = List.from(widget.initialOptions);
+    searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterOptions(String query) {
+    setState(() {
+      filteredOptions = widget.initialOptions
+          .where((option) => option.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  void _addItem(String item) {
+    widget.onAddItem(item);
+    setState(() {
+      filteredOptions.remove(item);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$item added!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Add New ${widget.title}'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              labelText: 'Search',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
+            ),
+            onChanged: _filterOptions,
+          ),
+          SizedBox(height: 10),
+          filteredOptions.isNotEmpty
+              ? SizedBox(
+                  width: double.maxFinite,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: filteredOptions.length,
+                    itemBuilder: (context, index) {
+                      String option = filteredOptions[index];
+                      return ListTile(
+                        title: Text(option),
+                        trailing: IconButton(
+                          icon: Icon(Icons.add, color: Colors.green),
+                          onPressed: () => _addItem(option),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : Text("No options available."),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Cancel"),
+        ),
+      ],
+    );
+  }
+}
+
+class _DropdownContent extends StatefulWidget {
+  final String title;
+  final List<dynamic> items;
+  final String keyName;
+  final Function(dynamic item) onItemRemoved;
+  final VoidCallback onAddItem;
+
+  const _DropdownContent({
+    required this.title,
+    required this.items,
+    required this.keyName,
+    required this.onItemRemoved,
+    required this.onAddItem,
+  });
+
+  @override
+  __DropdownContentState createState() => __DropdownContentState();
+}
+
+class __DropdownContentState extends State<_DropdownContent> {
+  late List<dynamic> filteredItems;
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    filteredItems = List.from(widget.items);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TextField(
+          controller: searchController,
+          decoration: InputDecoration(
+            labelText: 'Search...',
+            prefixIcon: Icon(Icons.search),
+            border: OutlineInputBorder(),
+          ),
+          onChanged: (query) {
+            setState(() {
+              filteredItems = widget.items
+                  .where((item) =>
+                      item.toLowerCase().contains(query.toLowerCase()))
+                  .toList();
+            });
+          },
+        ),
+        filteredItems.isNotEmpty
+            ? SizedBox(
+                width: double.maxFinite,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: filteredItems.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(filteredItems[index].toString()),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          widget.onItemRemoved(filteredItems[index]);
+                          setState(() {
+                            filteredItems.removeAt(index);
+                          });
+                        },
+                      ),
+                    );
+                  },
+                ),
+              )
+            : Text('No items available'),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Close"),
+        ),
+        TextButton(
+          onPressed: widget.onAddItem,
+          child: Text("Add preferences"),
+        ),
+      ],
+    );
+  }
+}
+
 class Userprofile extends StatefulWidget {
   @override
   _UserprofileState createState() => _UserprofileState();
 }
 
 class _UserprofileState extends State<Userprofile> {
+  late List<dynamic> filteredItems;
   @override
   void initState() {
     super.initState();
+    if (!globalloadedpreferences) {
+      _fetchUserPreferences();
+    }
     if (!globalloadedvariables) {
       _fetchUserDetails();
     }
@@ -47,139 +247,99 @@ class _UserprofileState extends State<Userprofile> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        final String userId = user.uid;
         final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('User')
-            .doc(userId)
+            .collection('Preferences')
+            .doc('preferences')
             .get();
 
         if (userDoc.exists) {
           setState(() {
-            globalUserData = userDoc.data() as Map<String, dynamic>;
-            globalloadedvariables = true;
+            globalOptions = userDoc.data() as Map<String, dynamic>;
+            globalloadedpreferences = true;
           });
+          print('feteched preferences successfully');
         } else {
-          print("No user data found in Firestore.");
+          print("No preference data found in Firestore.");
         }
       } else {
         print("No user signed in.");
       }
     } catch (e) {
-      print("Error fetching user details: $e");
+      print("Error fetching preferences details: $e");
     }
   }
 
   void _showDropdownPopup(String title, List<dynamic> items, String key) {
-    TextEditingController searchController = TextEditingController();
-    List<dynamic> filteredItems = List.from(items);
-
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(title),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Search Bar
-              TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  labelText: 'Search...',
-                  prefixIcon: Icon(Icons.search),
-                ),
-                onChanged: (query) {
-                  setState(() {
-                    filteredItems = items
-                        .where((item) => item
-                            .toString()
-                            .toLowerCase()
-                            .contains(query.toLowerCase()))
-                        .toList();
-                  });
-                },
-              ),
-              // Display items
-              filteredItems.isNotEmpty
-                  ? SizedBox(
-                      width: double.maxFinite,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: filteredItems.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(filteredItems[index].toString()),
-                            trailing: IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                _removeItemFromList(key, filteredItems[index]);
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : Text('No items available'),
-            ],
+          content: _DropdownContent(
+            title: title,
+            items: items,
+            keyName: key,
+            onItemRemoved: (item) {
+              _removeItemFromList(key, item);
+            },
+            onAddItem: () {
+              _showAddItemDialog(title, key);
+            },
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Close"),
-            ),
-            TextButton(
-              onPressed: () {
-                // Add new item functionality
-                _showAddItemDialog(title, key);
-              },
-              child: Text("Add preferences"),
-            ),
-          ],
         );
       },
     );
   }
 
-// Function to handle the addition of new item to the corresponding list
   void _showAddItemDialog(String title, String key) {
-    TextEditingController newItemController = TextEditingController();
-
+    List<String> initialOptions =
+        (globalOptions['options_${key}'] as List<dynamic>)
+            .cast<String>()
+            .where((item) => !(globalUserData[key]?.contains(item) ?? false))
+            .toList();
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('Add New $title'),
-          content: TextField(
-            controller: newItemController,
-            decoration: InputDecoration(
-              labelText: 'New Item',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                String newItem = newItemController.text.trim();
-                if (newItem.isNotEmpty) {
-                  setState(() {
-                    globalUserData[title].add(newItem);
-                  });
-                  Navigator.of(context).pop();
-                }
-              },
-              child: Text("Add"),
-            ),
-          ],
+        return AddItemDialog(
+          title: title,
+          keyName: key,
+          initialOptions: initialOptions,
+          onAddItem: (String item) {
+            setState(() {
+              globalUserData[key]?.add(item);
+              globalOptions['options_${key}']?.remove(item);
+            });
+            _addupdateDatabase(key, item);
+          },
         );
       },
     );
+  }
+
+  Future<void> _addupdateDatabase(String key, String item) async {
+    // // Replace this with actual database logic.
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final String userId = user.uid;
+        List<dynamic> updatedList = globalUserData[key] ?? [];
+        await FirebaseFirestore.instance
+            .collection('User')
+            .doc(userId)
+            .update({key: updatedList});
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$item added successfully')),
+        );
+      }
+    } catch (e) {
+      print("Error removing item: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to remove $item')),
+      );
+    }
+    // await Future.delayed(Duration(milliseconds: 500)); // Simulating DB delay.
+    print('Database updated: $key -> $item');
   }
 
   Future<void> _removeItemFromList(String key, String item) async {
@@ -199,7 +359,7 @@ class _UserprofileState extends State<Userprofile> {
           globalUserData[key] = updatedList;
         });
 
-        Navigator.of(context).pop(); // Close the popup
+        // Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$item removed successfully')),
         );
@@ -218,24 +378,18 @@ class _UserprofileState extends State<Userprofile> {
       if (user != null) {
         final String userId = user.uid;
 
-        // Fetch the current list from globalUserData
         List<dynamic> updatedList = globalUserData[key] ?? [];
-
-        // Add the new item to the list
         updatedList.add(newItem);
-
-        // Update the list in Firebase
         await FirebaseFirestore.instance
             .collection('User')
             .doc(userId)
             .update({key: updatedList});
 
-        // Update the local data as well
         setState(() {
           globalUserData[key] = updatedList;
         });
 
-        Navigator.of(context).pop(); // Close the popup
+        Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$newItem added successfully')),
         );
@@ -445,12 +599,12 @@ class _UserprofileState extends State<Userprofile> {
               ],
             ),
             SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
+            // Text(
+            //   value,
+            //   style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            //   maxLines: 3,
+            //   overflow: TextOverflow.ellipsis,
+            // ),
           ],
         ),
       ),
