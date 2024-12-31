@@ -172,9 +172,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                           launchUrl(Uri.parse(widget.newsItem.link),
                               mode: LaunchMode.externalApplication);
                         } else {
-                          launchUrl(
-                              Uri.parse(
-                                  'https://www.youtube.com/watch?v=__j-G-rqWlU'),
+                          launchUrl(Uri.parse('https://www.dinamalar.com/'),
                               mode: LaunchMode.externalApplication);
                         }
                       },
