@@ -1,5 +1,4 @@
 import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
@@ -15,6 +14,8 @@ class _NewsListScreenState extends State<NewsListScreen> {
   late Future<List<NewsItem>> latestItems;
   bool isLoading = true;
   String errorMessage = '';
+
+  // Fetch data method
   Future<List<NewsItem>> fetchRssFeed(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
@@ -23,7 +24,8 @@ class _NewsListScreenState extends State<NewsListScreen> {
         final items = document.findAllElements('item');
         return items.map((element) => NewsItem.fromXml(element)).toList();
       } else {
-        print('Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
+        print(
+            'Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
         return [];
       }
     } catch (e) {
@@ -32,6 +34,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
     }
   }
 
+  // Fetch multiple RSS feeds
   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
     List<NewsItem> allNewsItems = [];
     List<String> failedUrls = [];
@@ -57,6 +60,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
     return allNewsItems;
   }
 
+  // Refresh method to reload data
   Future<void> _refreshNews() async {
     setState(() {
       isLoading = true;
@@ -75,12 +79,6 @@ class _NewsListScreenState extends State<NewsListScreen> {
         'https://www.hindutamil.in/rss',
         'https://www.dinamani.com/rss',
         'https://feeds.nbcnews.com/nbcnews/public/news',
-        // 'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
-        // 'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
-        // 'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
-        // 'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
-        // 'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
-        // 'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
       ]);
     } catch (e) {
       setState(() {
@@ -96,38 +94,17 @@ class _NewsListScreenState extends State<NewsListScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize both futureNewsItems and latestItems here
     futureNewsItems = fetchMultipleRssFeeds([
       'https://www.dinakaran.com/feed/',
       'https://timesofindia.indiatimes.com/rss.cms',
-      // 'https://www.thanthitv.com/feed',
-      // 'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
-      // 'https://www.indiatoday.in/rss',
-      // 'https://feeds.bbci.co.uk/news/world/rss.xml',
-      // 'https://www.hindutamil.in/rss',
-      // 'https://www.dinamani.com/rss',
-      // 'https://feeds.nbcnews.com/nbcnews/public/news',
-      // 'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
-      // 'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
-      // 'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
-      // 'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
-      // 'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
-      // 'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
     ]);
+    latestItems = fetchMultipleRssFeeds(["https://www.dinakaran.com/feed/"]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('News App'),
-      //   backgroundColor: Colors.blueGrey[900],
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.refresh),
-      //       onPressed: _refreshNews,
-      //     ),
-      //   ],
-      // ),   
       body: errorMessage.isNotEmpty
           ? _buildErrorWidget()
           : RefreshIndicator(
@@ -177,6 +154,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
     );
   }
 
+  // Error widget
   Widget _buildErrorWidget() {
     return Center(
       child: Column(
@@ -199,6 +177,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
     );
   }
 
+  // Build latest news widget
   Widget _buildLatestNews() {
     return FutureBuilder<List<NewsItem>>(
       future: latestItems,
@@ -220,6 +199,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
     );
   }
 
+  // Build all news widget
   Widget _buildAllNews() {
     return FutureBuilder<List<NewsItem>>(
       future: futureNewsItems,
@@ -361,7 +341,12 @@ class _NewsListScreenState extends State<NewsListScreen> {
 
   Widget _buildCategories() {
     final categories = ['Politics', 'Sports', 'Entertainment', 'Business'];
-    final categoriesImages = ['politics.png', 'sports.png', 'entertainment.png', 'business.png'];
+    final categoriesImages = [
+      'politics.png',
+      'sports.png',
+      'entertainment.png',
+      'business.png'
+    ];
     return SizedBox(
       height: 100,
       child: ListView.builder(
@@ -374,7 +359,8 @@ class _NewsListScreenState extends State<NewsListScreen> {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundImage: AssetImage('assets/images/${categoriesImages[index]}'),
+                  backgroundImage:
+                      AssetImage('assets/images/${categoriesImages[index]}'),
                 ),
                 const SizedBox(height: 8),
                 Text(categories[index]),
@@ -387,7 +373,13 @@ class _NewsListScreenState extends State<NewsListScreen> {
   }
 
   Widget _buildLocations() {
-    final locations = ['Chennai', 'Cuddalore', 'Thiruvannamalai', 'Sivakasi', 'Pondicherry'];
+    final locations = [
+      'Chennai',
+      'Cuddalore',
+      'Thiruvannamalai',
+      'Sivakasi',
+      'Pondicherry'
+    ];
     return SizedBox(
       height: 100,
       child: ListView.builder(
@@ -406,7 +398,8 @@ class _NewsListScreenState extends State<NewsListScreen> {
                 const SizedBox(height: 10),
                 Text(
                   locations[index],
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
