@@ -1,13 +1,23 @@
+<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:xml/xml.dart' as xml;
 // import '../models/news_item.dart';
+=======
+import 'dart:ffi';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:xml/xml.dart' as xml;
+import '../models/news_item.dart';
+>>>>>>> dde25dbcbb9fbef8b1c44c3397502186e3fdae24
 
 // class NewsListScreen extends StatefulWidget {
 //   @override
 //   _NewsListScreenState createState() => _NewsListScreenState();
 // }
 
+<<<<<<< HEAD
 // class _NewsListScreenState extends State<NewsListScreen> {
 //   late Future<List<NewsItem>> futureNewsItems;
 //   Future<List<NewsItem>> fetchRssFeed(String url) async {
@@ -27,6 +37,29 @@
 //       return [];
 //     }
 //   }
+=======
+class _NewsListScreenState extends State<NewsListScreen> {
+  late Future<List<NewsItem>> futureNewsItems;
+  late Future<List<NewsItem>> latestItems;
+  bool isLoading = true;
+  String errorMessage = '';
+  Future<List<NewsItem>> fetchRssFeed(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final document = xml.XmlDocument.parse(response.body);
+        final items = document.findAllElements('item');
+        return items.map((element) => NewsItem.fromXml(element)).toList();
+      } else {
+        print('Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching RSS feed from $url: $e');
+      return [];
+    }
+  }
+>>>>>>> dde25dbcbb9fbef8b1c44c3397502186e3fdae24
 
 //   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
 //     List<NewsItem> allNewsItems = [];
