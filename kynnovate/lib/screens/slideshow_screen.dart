@@ -43,14 +43,12 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
       'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
     ]);
-
     List<NewsItem> fetchedArticles = fetchRandomNews(allNews);
 
     for (var article in fetchedArticles) {
-      // Check if image URL is provided, otherwise use login.png
-      String imageUrl = article.imageUrl.isNotEmpty ? article.imageUrl : 'assets/login.png';
+      String imageUrl =
+          article.imageUrl.isNotEmpty ? article.imageUrl : 'assets/login.png';
 
-      // Generate TTS audio file
       await narrateArticle(article.description);
 
       article = NewsItem(
@@ -84,7 +82,8 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
         final items = document.findAllElements('item');
         return items.map((element) => NewsItem.fromXml(element)).toList();
       } else {
-        print('Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
+        print(
+            'Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
         return [];
       }
     } catch (e) {
@@ -114,7 +113,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     final directory = await getApplicationDocumentsDirectory();
     String path = '${directory.path}/${text.hashCode}.mp3';
     if (File(path).existsSync()) {
-      await audioPlayer.play(path, isLocal: true);
+      await audioPlayer.play(DeviceFileSource(path));
     } else {
       print("Audio file not found: $path");
     }
@@ -133,45 +132,51 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : PageView.builder(
-        itemCount: articles.length,
-        onPageChanged: (index) {
-          audioPlayer.stop(); // Stop any currently playing audio when the page changes
-        },
-        itemBuilder: (context, index) {
-          final article = articles[index];
-          return Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: article.imageUrl.startsWith('assets')
-                    ? AssetImage(article.imageUrl)
-                    : NetworkImage(article.imageUrl) as ImageProvider,
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(16.0),
-                  color: Colors.black54,
+              itemCount: articles.length,
+              onPageChanged: (index) {
+                audioPlayer
+                    .stop(); // Stop any currently playing audio when the page changes
+              },
+              itemBuilder: (context, index) {
+                final article = articles[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: article.imageUrl.startsWith('assets')
+                          ? AssetImage(article.imageUrl)
+                          : NetworkImage(article.imageUrl) as ImageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(article.title, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-                      SizedBox(height: 10),
-                      Text(article.description, style: TextStyle(color: Colors.white)),
-                      SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () => playAudio(article.description),
-                        child: Text('Listen'),
+                      Container(
+                        padding: EdgeInsets.all(16.0),
+                        color: Colors.black54,
+                        child: Column(
+                          children: [
+                            Text(article.title,
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
+                            SizedBox(height: 10),
+                            Text(article.description,
+                                style: TextStyle(color: Colors.white)),
+                            SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () => playAudio(article.description),
+                              child: Text('Listen'),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

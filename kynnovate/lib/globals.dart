@@ -9,6 +9,7 @@ Map<String, dynamic> globalOptions = {};
 Map<String, dynamic> globalUserData = {};
 bool globalloadedvariables = false;
 bool globalloadedpreferences = false;
+String? globalLanguageOption = 'ta';
 
 class ThemeNotifier extends ChangeNotifier {
   int _theme = 1;
