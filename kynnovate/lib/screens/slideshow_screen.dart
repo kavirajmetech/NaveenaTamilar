@@ -5,6 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import '../models/news_item.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
+import 'package:kynnovate/landingpage.dart'; // Import the HomeScreen from landingpage.dart
 
 class SlideshowScreen extends StatefulWidget {
   @override
@@ -14,12 +15,13 @@ class SlideshowScreen extends StatefulWidget {
 class _SlideshowScreenState extends State<SlideshowScreen> {
   bool isSpeaking = false;
   List<int> likedArticles = [];
-
-
   List<NewsItem> articles = [];
   bool isLoading = true;
   final FlutterTts flutterTts = FlutterTts();
   int currentSlideIndex = 0;
+  int articlesPerBatch = 10;
+  int totalArticlesFetched = 0;
+  int currentBatchStartIndex = 0;
 
   @override
   void initState() {
@@ -43,19 +45,57 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   }
 
   Future<void> fetchArticles() async {
-    List<NewsItem> allNews = await fetchMultipleRssFeeds([
-      'https://www.dinakaran.com/feed/',
-      'https://feeds.bbci.co.uk/news/world/rss.xml',
-      'https://feeds.nbcnews.com/nbcnews/public/news',
-      'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml'
-    ]);
+    try {
+      List<NewsItem> allNews = await fetchMultipleRssFeeds([
+        "https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml",
+        'https://www.dinakaran.com/feed/',
+        'https://feeds.bbci.co.uk/news/world/rss.xml',
+        'https://feeds.nbcnews.com/nbcnews/public/news',
+        'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml'
+      ]);
 
-    List<NewsItem> fetchedArticles = fetchRandomNews(allNews);
+      totalArticlesFetched = allNews.length;
+      List<NewsItem> fetchedArticles = fetchRandomNews(allNews);
 
+      setState(() {
+        articles = fetchedArticles;
+        isLoading = false;
+        currentBatchStartIndex = articles.length; // Set the batch start index
+      });
+
+      print("Initial articles fetched: ${articles.length}");
+    } catch (e) {
+      print("Error fetching initial articles: $e");
+    }
+  }
+
+  Future<void> fetchMoreArticles() async {
     setState(() {
-      articles = fetchedArticles;
-      isLoading = false;
+      isLoading = true;
     });
+
+    try {
+      List<NewsItem> allNews = await fetchMultipleRssFeeds([
+        "https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml",
+        'https://www.dinakaran.com/feed/',
+        'https://feeds.bbci.co.uk/news/world/rss.xml',
+        'https://feeds.nbcnews.com/nbcnews/public/news',
+        'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml'
+      ]);
+
+      totalArticlesFetched += allNews.length;
+      List<NewsItem> fetchedArticles = fetchRandomNews(allNews);
+
+      setState(() {
+        articles.addAll(fetchedArticles);
+        isLoading = false;
+        currentBatchStartIndex = articles.length; // Update the batch start index
+      });
+
+      print("More articles fetched: ${fetchedArticles.length}");
+    } catch (e) {
+      print("Error fetching more articles: $e");
+    }
   }
 
   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
@@ -87,7 +127,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   List<NewsItem> fetchRandomNews(List<NewsItem> allNews) {
     final random = Random();
     allNews.shuffle(random);
-    return allNews.take(10).toList();
+    return allNews.take(articlesPerBatch).toList();
   }
 
   Future<void> speak(String text) async {
@@ -103,25 +143,53 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       isSpeaking = false;
     });
   }
+  int currentTheme = 1; // 1 for Light, 0 for Dark
 
+  // Method to toggle theme
+  void toggleTheme() {
+    setState(() {
+      currentTheme = (currentTheme == 1) ? 0 : 1; // Toggle theme
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('News Shorts')),
-      body: isLoading
+      appBar: AppBar(
+        title: Text('News Shorts'),
+        leading: IconButton(
+          icon: Icon(Icons.home),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage(toggleTheme: toggleTheme,)),
+            );
+          },
+        ),
+      ),
+      body: isLoading && articles.isEmpty
           ? Center(child: CircularProgressIndicator())
           : PageView.builder(
-        scrollDirection: Axis.vertical, // Change to vertical scroll
-        itemCount: articles.length,
+        scrollDirection: Axis.vertical,
+        itemCount: articles.length + (isLoading ? 1 : 0),
         onPageChanged: (index) {
           setState(() {
             currentSlideIndex = index;
           });
           stop();
-          speak(articles[index].description);
+          if (index < articles.length) {
+            speak(articles[index].description);
+          }
+
+          // Fetch more articles when user swipes past the 5th slide
+          if (index == currentBatchStartIndex - 5 && !isLoading && totalArticlesFetched < articles.length + articlesPerBatch) {
+            fetchMoreArticles();
+          }
         },
         itemBuilder: (context, index) {
+          if (index == articles.length && isLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
           final article = articles[index];
           return Container(
             decoration: BoxDecoration(
@@ -134,7 +202,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
             ),
             child: Container(
               padding: EdgeInsets.all(16.0),
-              color: Colors.black54.withOpacity(0.5), // Semi-transparent background
+              color: Colors.black54.withOpacity(0.5),
               child: Stack(
                 children: [
                   Positioned(
@@ -204,8 +272,6 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                   ),
                 ],
               ),
-
-
             ),
           );
         },

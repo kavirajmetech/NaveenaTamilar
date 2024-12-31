@@ -8,23 +8,18 @@ import 'latest_news_page.dart';
 import 'location_page.dart';
 import 'news_details_screen.dart';
 import 'package:kynnovate/Models/news_item.dart';
-import 'dart:async';
+import 'dart:async';  
 
-import 'todays_page.dart';  
-
-class NewsListScreen extends StatefulWidget {
+class TodaysPage extends StatefulWidget {
   @override
-  _NewsListScreenState createState() => _NewsListScreenState();
+  _TodaysPageState createState() => _TodaysPageState();
 }
 
-class _NewsListScreenState extends State<NewsListScreen> {
+class _TodaysPageState extends State<TodaysPage> {
   late Future<List<NewsItem>> futureNewsItems;
   late Future<List<NewsItem>> latestItems;
-  late Timer _timer;
   bool isLoading = true;
   String errorMessage = '';
-  late ScrollController _scrollController;  // Scroll controller for auto-scrolling
-
 
   // Fetch data method
   Future<List<NewsItem>> fetchRssFeed(String url) async {
@@ -79,7 +74,6 @@ class _NewsListScreenState extends State<NewsListScreen> {
     });
 
     try {
-      latestItems = fetchMultipleRssFeeds(["https://www.dinakaran.com/feed/"]);
       futureNewsItems = fetchMultipleRssFeeds([
         'https://www.dinakaran.com/feed/',
         'https://timesofindia.indiatimes.com/rss.cms',
@@ -107,36 +101,8 @@ class _NewsListScreenState extends State<NewsListScreen> {
   void initState() {
     super.initState();
     _refreshNews();
-    _scrollController = ScrollController();
-
-        // Set up the timer for automatic scrolling
-    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
-      if (_scrollController.hasClients) {
-        double maxScroll = _scrollController.position.maxScrollExtent;
-        double currentScroll = _scrollController.position.pixels;
-        
-        // If the scroll position has reached the maximum, reset to the beginning
-        if (currentScroll == maxScroll) {
-          _scrollController.jumpTo(0);
-        } else {
-          // Scroll by a certain amount to the right
-          _scrollController.animateTo(
-            currentScroll + 360.0,
-            duration: Duration(seconds: 1),
-            curve: Curves.easeInOut,
-          );
-        }
-      }
-    });
-
   }
 
-  @override
-  void dispose() {
-    _timer.cancel();
-    _scrollController.dispose();  // Dispose of the scroll controller
-    super.dispose();
-  }
 
 
   @override
@@ -148,13 +114,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
               onRefresh: _refreshNews,
               child: ListView(
                 children: [
-                  _buildSectionHeader('Latest'),
-                  _buildLatestNews(),
-                  _buildSectionHeader('Categories'),
-                  _buildCategories(),
-                  _buildSectionHeader('Location'),
-                  _buildLocations(),
-                  _buildSectionHeader('Today\'s'),
+                  _buildSectionHeader('Today\'s News'),
                   _buildAllNews(),
                 ],
               ),
@@ -294,47 +254,6 @@ Widget _buildNewsItem(NewsItem item) {
   );
 }
 
-
-
-
-  // Build latest news widget
-  Widget _buildLatestNews() {
-    return FutureBuilder<List<NewsItem>>(
-      future: latestItems,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return _buildSectionError('Latest News');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildEmptySection('Latest News');
-        }
-
-        final items = snapshot.data!.take(5).toList();
-
-        return SizedBox(
-          height: 250, // Keep the height fixed
-          child: ListView.builder(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return _buildNewsItem(items[index]);
-            },
-          ),
-        );
-      },
-    );
-  }
-
-
-
-
   // Build all news widget
   Widget _buildAllNews() {
     return FutureBuilder<List<NewsItem>>(
@@ -399,26 +318,6 @@ Widget _buildNewsItem(NewsItem item) {
           Text(
             title,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          TextButton(
-            onPressed: () {
-              if (title=='Latest'){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LatestNewsPage()));
-              }
-              else if(title=='Categories')
-              {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryPage(tag: 'Politics')));
-              }
-              else if(title=='Location')
-              {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LocationPage(locationTag: 'Chennai')));
-              }
-              else if(title=='Today\'s')
-              {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => TodaysPage()));
-              }
-            },
-            child: const Text('See All'),
           ),
         ],
       ),
@@ -489,100 +388,9 @@ Widget _buildNewsItem(NewsItem item) {
           );
   }
 
-  Widget _buildCategories() {
-  final categories = ['Politics', 'Sports', 'Entertainment', 'Business'];
-  final categoriesImages = [
-    'politics.png',
-    'sports.png',
-    'entertainment.png',
-    'business.png',
-  ];
-
-  return SizedBox(
-    height: 100,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            // Navigate to CategoryPage with the selected category
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CategoryPage(tag: categories[index]),
-              ),
-            );
-          },
-          child: Container(
-            width: 100,
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage:
-                      AssetImage('assets/images/${categoriesImages[index]}'),
-                ),
-                const SizedBox(height: 8),
-                Text(categories[index]),
-              ],
-            ),
-          ),
-        );
-      },
-    ),
-  );
-}
+ 
 
 
-Widget _buildLocations() {
-  final locations = [
-    'Chennai',
-    'Cuddalore',
-    'Thiruvannamalai',
-    'Sivakasi',
-    'Pondicherry',
-  ];
-
-  return SizedBox(
-    height: 100,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: locations.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            // Navigate to LocationPage with the selected location
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LocationPage(locationTag: locations[index]),
-              ),
-            );
-          },
-          child: Container(
-            width: 100,
-            child: Column(
-              children: [
-                Icon(
-                  Icons.location_on,
-                  size: 40,
-                  color: const Color.fromARGB(255, 46, 78, 255),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  locations[index],
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    ),
-  );
-}
 
   Widget _buildNewsList(List<NewsItem> newsItems) {
     return ListView.builder(

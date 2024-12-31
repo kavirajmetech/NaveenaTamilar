@@ -25,12 +25,15 @@ class NewsItem {
       imageUrl: element.findElements('thumbimage').isNotEmpty
           ? element.findElements('thumbimage').first.text
           : element.findElements('media:thumbnail').isNotEmpty
-              ? element.findElements('media:thumbnail').first.getAttribute('url') ?? ''
-              : element.findElements('image').isNotEmpty
-                  ? element.findElements('image').first.findElements('url').isNotEmpty
-                      ? element.findElements('image').first.findElements('url').single.text
-                      : ''
-                  : '',
+          ? element.findElements('media:thumbnail').first.getAttribute('url') ?? ''
+          : element.findElements('media:content').isNotEmpty
+          ? element.findElements('media:content').first.getAttribute('url') ?? ''
+          : element.findElements('image').isNotEmpty
+          ? element.findElements('image').first.findElements('url').isNotEmpty
+          ? element.findElements('image').first.findElements('url').single.text
+          : ''
+          : ''
+
     );
   }
 

@@ -53,6 +53,8 @@
 //     );
 //   }
 // }import 'package:firebase_auth/firebase_auth.dart';import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:ffi';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +63,7 @@ import 'package:kynnovate/landingpage.dart';
 import 'package:kynnovate/pages/authentication/signin.dart';
 import 'package:kynnovate/pages/authentication/splashscreen.dart';
 import 'package:kynnovate/pages/children/childrennews.dart';
+import 'package:kynnovate/screens/news_details_screen.dart';
 import 'package:kynnovate/screens/news_list_screen.dart';
 import 'package:kynnovate/screens/slideshow_screen.dart';
 
@@ -105,9 +108,9 @@ class _MyAppState extends State<MyApp> {
             return SplashScreen();
           }
           if (snapshot.hasData) {
-            return HomePage(toggleTheme: toggleTheme, slideshowScreen: SlideshowScreen());
+            // return HomePage(toggleTheme: toggleTheme);
             // return KidsNewsPage();
-            // return SlideshowScreen();
+            return SlideshowScreen();
           } else {
             return SignInPage();
           }
