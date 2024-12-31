@@ -115,17 +115,20 @@ class NewsItem {
     String parsedDescription = parseHtmlString(rawDescription);
 
     // Determine the image URL based on available tags
-    String imageUrl = getElementText('thumbimage') ??
-        getElementAttribute('media:thumbnail', 'url') ??
-        getElementAttribute('media:content', 'url') ??
-        (element.findElements('image').isNotEmpty &&
-                element
-                    .findElements('image')
-                    .first
-                    .findElements('url')
-                    .isNotEmpty
-            ? element.findElements('image').first.findElements('url').first.text
-            : '');
+    String imageUrl = element.findElements('thumbimage').isNotEmpty
+        ? element.findElements('thumbimage').first.text
+        : element.findElements('description').isNotEmpty
+        ? element.findElements('a').first.getAttribute('src') ?? ''
+        : element.findElements('media:thumbnail').isNotEmpty
+        ? element.findElements('media:thumbnail').first.getAttribute('url') ?? ''
+        : element.findElements('content:encoded').isNotEmpty
+        ? RegExp(r'<img src="([^"]+)"').firstMatch(element.findElements('content:encoded').first.text)?.group(1) ?? ''
+        : element.findElements('media:content').isNotEmpty
+        ? element.findElements('img').first.getAttribute('src') ?? ''
+        : element.findElements('image').isNotEmpty
+        ? element.findElements('image').first.findElements('url').isNotEmpty
+        ? element.findElements('image').first.findElements('url').single.text : ''
+        : '';
 
     return NewsItem(
       title: getElementText('title'),

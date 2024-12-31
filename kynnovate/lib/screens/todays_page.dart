@@ -76,13 +76,12 @@ class _TodaysPageState extends State<TodaysPage> {
     try {
       futureNewsItems = fetchMultipleRssFeeds([
         'https://www.dinakaran.com/feed/',
-        'https://timesofindia.indiatimes.com/rss.cms',
+        'https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms',
         'https://www.thanthitv.com/feed',
         'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
-        'https://www.indiatoday.in/rss',
+        'https://www.indiatoday.in/rss/1206514',
         'https://feeds.bbci.co.uk/news/world/rss.xml',
-        'https://www.hindutamil.in/rss',
-        'https://www.dinamani.com/rss',
+        'https://beta.dinamani.com/api/v1/collections/latest-news.rss',
         'https://feeds.nbcnews.com/nbcnews/public/news',
       ]);
     } catch (e) {
