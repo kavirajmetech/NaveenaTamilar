@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kynnovate/landingpage.dart';
 import 'package:kynnovate/pages/authentication/signin.dart';
+import 'package:kynnovate/screens/slideshow_screen.dart';
 import '../../globals.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => HomePage(
-                          toggleTheme: () {},
+                          toggleTheme: () {}, slideshowScreen: SlideshowScreen(),
                         )),
               );
             }
