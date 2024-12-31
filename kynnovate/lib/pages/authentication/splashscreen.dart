@@ -29,9 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => HomePage(
-                          toggleTheme: () {}, slideshowScreen: SlideshowScreen(),
-                        )),
+                    builder: (context) => HomePage(toggleTheme: () {})),
               );
             }
           });
