@@ -1,16 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kynnovate/Models/news_item.dart';
-
-class NewsShortRealTime extends StatefulWidget {
-  @override
-  _NewsShortRealTimeState createState() => _NewsShortRealTimeState();
-}
-
-class _NewsShortRealTimeState extends State<NewsShortRealTime> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:kynnovate/Models/news_item.dart';
 import 'api_service.dart';
@@ -104,9 +92,4 @@ class _NewsSlideshowState extends State<NewsSlideshow> {
       },
     );
   }
-}
-      appBar: AppBar(
-        title: Text('News Shorts'),
-      ),
-}
 }
