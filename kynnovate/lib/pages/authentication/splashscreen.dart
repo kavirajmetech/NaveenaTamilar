@@ -20,7 +20,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initializeApp() async {
     print("Initializing app...");
 
-    // Use authStateChanges to monitor the user's authentication state
     FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       if (user != null) {
         if (mounted) {
@@ -37,7 +36,6 @@ class _SplashScreenState extends State<SplashScreen> {
           });
         }
       } else {
-        // No user is logged in, navigate to SignInPage
         if (mounted) {
           Future.delayed(Duration(seconds: 1), () {
             if (context.mounted) {
@@ -77,14 +75,17 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.android, size: 100), // Your app icon
+            Image.asset(
+              'assets/splashscreen.png',
+              height: 100,
+            ),
             SizedBox(height: 20),
             Text(
               "Loading...",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-            CircularProgressIndicator(), // Loading spinner
+            CircularProgressIndicator(),
           ],
         ),
       ),

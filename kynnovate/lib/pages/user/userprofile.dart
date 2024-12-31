@@ -598,7 +598,7 @@ class _UserprofileState extends State<Userprofile> {
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 5),
             // Text(
             //   value,
             //   style: TextStyle(fontSize: 14, color: Colors.grey[700]),
