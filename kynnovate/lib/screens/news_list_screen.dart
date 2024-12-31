@@ -111,7 +111,6 @@ class NewsListScreen extends StatefulWidget {
   _NewsListScreenState createState() => _NewsListScreenState();
 }
 
-
 class _NewsListScreenState extends State<NewsListScreen> {
   late Future<List<NewsItem>> futureNewsItems;
 
@@ -150,19 +149,19 @@ class _NewsListScreenState extends State<NewsListScreen> {
     futureNewsItems = fetchMultipleRssFeeds([
       'https://www.dinakaran.com/feed/',
       'https://timesofindia.indiatimes.com/rss.cms',
-      'https://www.thanthitv.com/feed',
-      'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
-      'https://www.indiatoday.in/rss',
-      'https://feeds.bbci.co.uk/news/world/rss.xml',
-      'https://www.hindutamil.in/rss',
-      'https://www.dinamani.com/rss',
-      'https://feeds.nbcnews.com/nbcnews/public/news',
-      'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
-      'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
-      'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
-      'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
-      'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
-      'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
+      // 'https://www.thanthitv.com/feed',
+      // 'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
+      // 'https://www.indiatoday.in/rss',
+      // 'https://feeds.bbci.co.uk/news/world/rss.xml',
+      // 'https://www.hindutamil.in/rss',
+      // 'https://www.dinamani.com/rss',
+      // 'https://feeds.nbcnews.com/nbcnews/public/news',
+      // 'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
+      // 'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
+      // 'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
+      // 'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
+      // 'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
+      // 'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
     ]);
   }
 
