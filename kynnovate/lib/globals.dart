@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 String? globalUserId;
@@ -25,3 +26,25 @@ class ThemeNotifier extends ChangeNotifier {
 }
 
 ThemeNotifier themeNotifier = ThemeNotifier();
+
+Future<void> fetchUserDetails() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final String userId = user.uid;
+      final DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('User').doc(userId).get();
+
+      if (userDoc.exists) {
+        globalUserData = userDoc.data() as Map<String, dynamic>;
+        globalloadedvariables = true;
+      } else {
+        print("No user data found in Firestore.");
+      }
+    } else {
+      print("No user signed in.");
+    }
+  } catch (e) {
+    print("Error fetching user details: $e");
+  }
+}

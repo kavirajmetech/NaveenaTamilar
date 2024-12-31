@@ -89,7 +89,8 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       setState(() {
         articles.addAll(fetchedArticles);
         isLoading = false;
-        currentBatchStartIndex = articles.length; // Update the batch start index
+        currentBatchStartIndex =
+            articles.length; // Update the batch start index
       });
 
       print("More articles fetched: ${fetchedArticles.length}");
@@ -109,13 +110,15 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
   Future<List<NewsItem>> fetchRssFeedWithTimeout(String url) async {
     try {
-      final response = await http.get(Uri.parse(url)).timeout(Duration(seconds: 10));
+      final response =
+          await http.get(Uri.parse(url)).timeout(Duration(seconds: 10));
       if (response.statusCode == 200) {
         final document = xml.XmlDocument.parse(utf8.decode(response.bodyBytes));
         final items = document.findAllElements('item');
         return items.map((element) => NewsItem.fromXml(element)).toList();
       } else {
-        print('Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
+        print(
+            'Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
         return [];
       }
     } catch (e) {
@@ -143,13 +146,20 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       isSpeaking = false;
     });
   }
+
   int currentTheme = 1; // 1 for Light, 0 for Dark
 
   // Method to toggle theme
-  void toggleTheme() {
-    setState(() {
-      currentTheme = (currentTheme == 1) ? 0 : 1; // Toggle theme
-    });
+  void toggleTheme(int controll) {
+    if (controll == 1) {
+      setState(() {
+        currentTheme = (currentTheme == 1) ? 0 : 1;
+      });
+    } else {
+      setState(() {
+        currentTheme = currentTheme;
+      });
+    }
   }
 
   @override
@@ -162,7 +172,10 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HomePage(toggleTheme: toggleTheme,)),
+              MaterialPageRoute(
+                  builder: (context) => HomePage(
+                        toggleTheme: toggleTheme,
+                      )),
             );
           },
         ),
@@ -170,112 +183,117 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       body: isLoading && articles.isEmpty
           ? Center(child: CircularProgressIndicator())
           : PageView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: articles.length + (isLoading ? 1 : 0),
-        onPageChanged: (index) {
-          setState(() {
-            currentSlideIndex = index;
-          });
-          stop();
-          if (index < articles.length) {
-            speak(articles[index].description);
-          }
+              scrollDirection: Axis.vertical,
+              itemCount: articles.length + (isLoading ? 1 : 0),
+              onPageChanged: (index) {
+                setState(() {
+                  currentSlideIndex = index;
+                });
+                stop();
+                if (index < articles.length) {
+                  speak(articles[index].description);
+                }
 
-          // Fetch more articles when user swipes past the 5th slide
-          if (index == currentBatchStartIndex - 5 && !isLoading && totalArticlesFetched < articles.length + articlesPerBatch) {
-            fetchMoreArticles();
-          }
-        },
-        itemBuilder: (context, index) {
-          if (index == articles.length && isLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
-          final article = articles[index];
-          return Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: article.imageUrl.isNotEmpty && !article.imageUrl.startsWith('assets')
-                    ? NetworkImage(article.imageUrl)
-                    : AssetImage('assets/login.png') as ImageProvider,
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Container(
-              padding: EdgeInsets.all(16.0),
-              color: Colors.black54.withOpacity(0.5),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 16.0,
-                    right: 16.0,
-                    child: IconButton(
-                      icon: Icon(
-                        isSpeaking && currentSlideIndex == index
-                            ? Icons.pause_circle_outline
-                            : Icons.play_circle_outline,
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                      onPressed: () {
-                        if (isSpeaking && currentSlideIndex == index) {
-                          stop();
-                        } else {
-                          speak(article.description);
-                        }
-                      },
+                // Fetch more articles when user swipes past the 5th slide
+                if (index == currentBatchStartIndex - 5 &&
+                    !isLoading &&
+                    totalArticlesFetched < articles.length + articlesPerBatch) {
+                  fetchMoreArticles();
+                }
+              },
+              itemBuilder: (context, index) {
+                if (index == articles.length && isLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                final article = articles[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: article.imageUrl.isNotEmpty &&
+                              !article.imageUrl.startsWith('assets')
+                          ? NetworkImage(article.imageUrl)
+                          : AssetImage('assets/login.png') as ImageProvider,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  Positioned(
-                    bottom: 16.0,
-                    right: 16.0,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.thumb_up,
-                        color: likedArticles.contains(index) ? Colors.blue : Colors.white,
-                        size: 40,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          if (likedArticles.contains(index)) {
-                            likedArticles.remove(index);
-                          } else {
-                            likedArticles.add(index);
-                          }
-                        });
-                        print("Article liked!");
-                      },
-                    ),
-                  ),
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  child: Container(
+                    padding: EdgeInsets.all(16.0),
+                    color: Colors.black54.withOpacity(0.5),
+                    child: Stack(
                       children: [
-                        Text(
-                          article.title,
-                          style: TextStyle(
-                            fontFamily: 'TamilFont',
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        Positioned(
+                          top: 16.0,
+                          right: 16.0,
+                          child: IconButton(
+                            icon: Icon(
+                              isSpeaking && currentSlideIndex == index
+                                  ? Icons.pause_circle_outline
+                                  : Icons.play_circle_outline,
+                              color: Colors.white,
+                              size: 40,
+                            ),
+                            onPressed: () {
+                              if (isSpeaking && currentSlideIndex == index) {
+                                stop();
+                              } else {
+                                speak(article.description);
+                              }
+                            },
                           ),
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          article.description,
-                          style: TextStyle(
-                            fontFamily: 'TamilFont',
-                            color: Colors.white,
+                        Positioned(
+                          bottom: 16.0,
+                          right: 16.0,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.thumb_up,
+                              color: likedArticles.contains(index)
+                                  ? Colors.blue
+                                  : Colors.white,
+                              size: 40,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                if (likedArticles.contains(index)) {
+                                  likedArticles.remove(index);
+                                } else {
+                                  likedArticles.add(index);
+                                }
+                              });
+                              print("Article liked!");
+                            },
+                          ),
+                        ),
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                article.title,
+                                style: TextStyle(
+                                  fontFamily: 'TamilFont',
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                article.description,
+                                style: TextStyle(
+                                  fontFamily: 'TamilFont',
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

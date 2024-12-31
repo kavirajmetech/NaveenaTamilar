@@ -10,7 +10,7 @@ import 'news_details_screen.dart';
 import 'package:kynnovate/Models/news_item.dart';
 import 'dart:async';
 
-import 'todays_page.dart';  
+import 'todays_page.dart';
 
 class NewsListScreen extends StatefulWidget {
   @override
@@ -23,8 +23,8 @@ class _NewsListScreenState extends State<NewsListScreen> {
   late Timer _timer;
   bool isLoading = true;
   String errorMessage = '';
-  late ScrollController _scrollController;  // Scroll controller for auto-scrolling
-
+  late ScrollController
+      _scrollController; // Scroll controller for auto-scrolling
 
   // Fetch data method
   Future<List<NewsItem>> fetchRssFeed(String url) async {
@@ -102,19 +102,18 @@ class _NewsListScreenState extends State<NewsListScreen> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
     _refreshNews();
     _scrollController = ScrollController();
 
-        // Set up the timer for automatic scrolling
+    // Set up the timer for automatic scrolling
     _timer = Timer.periodic(Duration(seconds: 3), (timer) {
       if (_scrollController.hasClients) {
         double maxScroll = _scrollController.position.maxScrollExtent;
         double currentScroll = _scrollController.position.pixels;
-        
+
         // If the scroll position has reached the maximum, reset to the beginning
         if (currentScroll == maxScroll) {
           _scrollController.jumpTo(0);
@@ -128,16 +127,14 @@ class _NewsListScreenState extends State<NewsListScreen> {
         }
       }
     });
-
   }
 
   @override
   void dispose() {
     _timer.cancel();
-    _scrollController.dispose();  // Dispose of the scroll controller
+    _scrollController.dispose(); // Dispose of the scroll controller
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -159,35 +156,35 @@ class _NewsListScreenState extends State<NewsListScreen> {
                 ],
               ),
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-            backgroundColor: Colors.blueGrey,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-            backgroundColor: Colors.blueGrey,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-            backgroundColor: Colors.blueGrey,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-            backgroundColor: Colors.blueGrey,
-          ),
-        ],
-        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-        unselectedItemColor: const Color.fromARGB(255, 91, 91, 91),
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: const [
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Home',
+      //       backgroundColor: Colors.blueGrey,
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.search),
+      //       label: 'Search',
+      //       backgroundColor: Colors.blueGrey,
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.favorite),
+      //       label: 'Favorites',
+      //       backgroundColor: Colors.blueGrey,
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.person),
+      //       label: 'Profile',
+      //       backgroundColor: Colors.blueGrey,
+      //     ),
+      //   ],
+      //   selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+      //   unselectedItemColor: const Color.fromARGB(255, 91, 91, 91),
+      //   showSelectedLabels: true,
+      //   showUnselectedLabels: true,
+      //   type: BottomNavigationBarType.fixed,
+      // ),
     );
   }
 
@@ -214,88 +211,86 @@ class _NewsListScreenState extends State<NewsListScreen> {
     );
   }
 
-Widget _buildNewsItem(NewsItem item) {
-  double boxWidth = 350; // Adjust this to change the width of the box
+  Widget _buildNewsItem(NewsItem item) {
+    double boxWidth = 350; // Adjust this to change the width of the box
 
-  return GestureDetector(
-    onTap: () {
-      // Navigate to NewsDetailScreen and pass the NewsItem
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => NewsDetailScreen(newsItem: item),
-        ),
-      );
-    },
-    child: Card(
-      margin: EdgeInsets.all(8.0),
-      child: Stack(
-        children: [
-          // Image with adjustable width and BoxFit.cover
-          Image.network(
-            item.imageUrl,
-            width: boxWidth,  // Adjusted width
-            height: 250, // Fixed height
-            fit: BoxFit.cover,  // Ensure the image covers the container
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                color: Colors.grey[300], // Placeholder in case of error
-                height: 250,
-                width: boxWidth,
-                child: const Icon(Icons.image_not_supported),
-              );
-            },
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Container(
-                color: Colors.grey[200], // Placeholder while loading
-                height: 250,
-                width: boxWidth,
-                child: const Center(child: CircularProgressIndicator()),
-              );
-            },
+    return GestureDetector(
+      onTap: () {
+        // Navigate to NewsDetailScreen and pass the NewsItem
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewsDetailScreen(newsItem: item),
           ),
-          // Text overlay with gradient background at the bottom
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: EdgeInsets.all(8.0),
-              width: boxWidth,  // Ensure overlay matches width of the image
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent, // Transparent at the top
-                    Colors.grey.withOpacity(0.7), // Greyish at the bottom
-                  ],
+        );
+      },
+      child: Card(
+        margin: EdgeInsets.all(8.0),
+        child: Stack(
+          children: [
+            // Image with adjustable width and BoxFit.cover
+            Image.network(
+              item.imageUrl,
+              width: boxWidth, // Adjusted width
+              height: 250, // Fixed height
+              fit: BoxFit.cover, // Ensure the image covers the container
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: Colors.grey[300], // Placeholder in case of error
+                  height: 250,
+                  width: boxWidth,
+                  child: const Icon(Icons.image_not_supported),
+                );
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  color: Colors.grey[200], // Placeholder while loading
+                  height: 250,
+                  width: boxWidth,
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              },
+            ),
+            // Text overlay with gradient background at the bottom
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                width: boxWidth, // Ensure overlay matches width of the image
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent, // Transparent at the top
+                      Colors.grey.withOpacity(0.7), // Greyish at the bottom
+                    ],
+                  ),
                 ),
-              ),
-              child: Text(
-                item.title.length > 50
-                    ? "${item.title.substring(0, 50)}..."  // Truncate text after 2 lines
-                    : item.title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
-                  overflow: TextOverflow.ellipsis,
+                child: Text(
+                  item.title.length > 50
+                      ? "${item.title.substring(0, 50)}..." // Truncate text after 2 lines
+                      : item.title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  maxLines: 2, // Limit the text to 2 lines
+                  softWrap:
+                      true, // Ensure it wraps to the next line if necessary
                 ),
-                maxLines: 2,  // Limit the text to 2 lines
-                softWrap: true,  // Ensure it wraps to the next line if necessary
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
-
-
-
+    );
+  }
 
   // Build latest news widget
   Widget _buildLatestNews() {
@@ -331,9 +326,6 @@ Widget _buildNewsItem(NewsItem item) {
       },
     );
   }
-
-
-
 
   // Build all news widget
   Widget _buildAllNews() {
@@ -402,20 +394,23 @@ Widget _buildNewsItem(NewsItem item) {
           ),
           TextButton(
             onPressed: () {
-              if (title=='Latest'){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LatestNewsPage()));
-              }
-              else if(title=='Categories')
-              {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryPage(tag: 'Politics')));
-              }
-              else if(title=='Location')
-              {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LocationPage(locationTag: 'Chennai')));
-              }
-              else if(title=='Today\'s')
-              {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => TodaysPage()));
+              if (title == 'Latest') {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LatestNewsPage()));
+              } else if (title == 'Categories') {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CategoryPage(tag: 'Politics')));
+              } else if (title == 'Location') {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            LocationPage(locationTag: 'Chennai')));
+              } else if (title == 'Today\'s') {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => TodaysPage()));
               }
             },
             child: const Text('See All'),
@@ -490,99 +485,99 @@ Widget _buildNewsItem(NewsItem item) {
   }
 
   Widget _buildCategories() {
-  final categories = ['Politics', 'Sports', 'Entertainment', 'Business'];
-  final categoriesImages = [
-    'politics.png',
-    'sports.png',
-    'entertainment.png',
-    'business.png',
-  ];
+    final categories = ['Politics', 'Sports', 'Entertainment', 'Business'];
+    final categoriesImages = [
+      'politics.png',
+      'sports.png',
+      'entertainment.png',
+      'business.png',
+    ];
 
-  return SizedBox(
-    height: 100,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            // Navigate to CategoryPage with the selected category
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CategoryPage(tag: categories[index]),
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              // Navigate to CategoryPage with the selected category
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CategoryPage(tag: categories[index]),
+                ),
+              );
+            },
+            child: Container(
+              width: 100,
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage:
+                        AssetImage('assets/images/${categoriesImages[index]}'),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(categories[index]),
+                ],
               ),
-            );
-          },
-          child: Container(
-            width: 100,
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage:
-                      AssetImage('assets/images/${categoriesImages[index]}'),
-                ),
-                const SizedBox(height: 8),
-                Text(categories[index]),
-              ],
             ),
-          ),
-        );
-      },
-    ),
-  );
-}
+          );
+        },
+      ),
+    );
+  }
 
+  Widget _buildLocations() {
+    final locations = [
+      'Chennai',
+      'Cuddalore',
+      'Thiruvannamalai',
+      'Sivakasi',
+      'Pondicherry',
+    ];
 
-Widget _buildLocations() {
-  final locations = [
-    'Chennai',
-    'Cuddalore',
-    'Thiruvannamalai',
-    'Sivakasi',
-    'Pondicherry',
-  ];
-
-  return SizedBox(
-    height: 100,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: locations.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            // Navigate to LocationPage with the selected location
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LocationPage(locationTag: locations[index]),
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: locations.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              // Navigate to LocationPage with the selected location
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      LocationPage(locationTag: locations[index]),
+                ),
+              );
+            },
+            child: Container(
+              width: 100,
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    size: 40,
+                    color: const Color.fromARGB(255, 46, 78, 255),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    locations[index],
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
+                ],
               ),
-            );
-          },
-          child: Container(
-            width: 100,
-            child: Column(
-              children: [
-                Icon(
-                  Icons.location_on,
-                  size: 40,
-                  color: const Color.fromARGB(255, 46, 78, 255),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  locations[index],
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w600),
-                ),
-              ],
             ),
-          ),
-        );
-      },
-    ),
-  );
-}
+          );
+        },
+      ),
+    );
+  }
 
   Widget _buildNewsList(List<NewsItem> newsItems) {
     return ListView.builder(

@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kynnovate/Models/news_item.dart';
-import 'news_details_screen.dart';  // Assuming you have a detail screen
+import 'package:xml/xml.dart'; // Import xml package for parsing
+
+import 'news_details_screen.dart'; // Assuming you have a detail screen
 
 class LatestNewsPage extends StatefulWidget {
   @override
@@ -15,70 +17,140 @@ class _LatestNewsPageState extends State<LatestNewsPage> {
   @override
   void initState() {
     super.initState();
-    _loadLatestNews();
+    latestItems = _loadLatestNews();
   }
 
-  // Fetch latest news from the API or file
   Future<List<NewsItem>> _loadLatestNews() async {
-    // Assuming the RSS URLs are stored in rssList.json
-    final response = await http.get(Uri.parse('assets/rssList.json'));
-    final data = json.decode(response.body);
-
-    final urls = data['categories']['General'];
-    return await fetchRssFeed(urls);
+    final String url = "https://www.dinakaran.com/feed/";
+    return await fetchRssFeed(url);
   }
 
-  // Fetch RSS feed
-  Future<List<NewsItem>> fetchRssFeed(List<String> urls) async {
+  Future<List<NewsItem>> fetchRssFeed(String url) async {
     List<NewsItem> allNewsItems = [];
-    for (String url in urls) {
+    try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        // Parse the XML response here
         allNewsItems.addAll(parseRss(response.body));
       }
+    } catch (e) {
+      print('Error fetching RSS feed from $url: $e');
     }
     return allNewsItems;
   }
 
-  // Parse RSS feed (add the logic for parsing)
   List<NewsItem> parseRss(String xmlContent) {
-    // Your XML parsing logic here
-    // Returning an empty list for simplicity
-    return [];
+    final document = XmlDocument.parse(xmlContent);
+    final items = document.findAllElements('item');
+    List<NewsItem> newsItems = [];
+
+    for (final element in items) {
+      // Use the NewsItem.fromXml method to create a NewsItem from each RSS <item>
+      newsItems.add(NewsItem.fromXml(element));
+    }
+
+    return newsItems;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Latest")),
+      appBar: AppBar(
+        title: const Text("Latest News"),
+      ),
       body: FutureBuilder<List<NewsItem>>(
         future: latestItems,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error loading news'));
+            return Center(
+              child: Text(
+                'Error loading news: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+            );
           }
           final items = snapshot.data ?? [];
+          if (items.isEmpty) {
+            return const Center(
+              child: Text(
+                'No news available',
+                style: TextStyle(fontSize: 18),
+              ),
+            );
+          }
           return ListView.builder(
             itemCount: items.length,
             itemBuilder: (context, index) {
+              final newsItem = items[index];
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => NewsDetailScreen(newsItem: items[index]),
+                      builder: (context) =>
+                          NewsDetailScreen(newsItem: newsItem),
                     ),
                   );
                 },
                 child: Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 3,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.network(items[index].imageUrl),
-                      Text(items[index].title),
+                      // Display news image
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(10)),
+                        child: Image.network(
+                          newsItem.imageUrl,
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 200,
+                              color: Colors.grey[300],
+                              child: const Center(
+                                child: Icon(Icons.broken_image, size: 50),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      // News title and description
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              newsItem.title,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              newsItem.description,
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black54),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
