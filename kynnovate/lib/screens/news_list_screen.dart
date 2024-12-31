@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
@@ -10,6 +12,9 @@ class NewsListScreen extends StatefulWidget {
 
 class _NewsListScreenState extends State<NewsListScreen> {
   late Future<List<NewsItem>> futureNewsItems;
+  late Future<List<NewsItem>> latestItems;
+  bool isLoading = true;
+  String errorMessage = '';
   Future<List<NewsItem>> fetchRssFeed(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
