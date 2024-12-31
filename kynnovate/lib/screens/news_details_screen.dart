@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kynnovate/Models/news_item.dart'; // Assuming you have a class called NewsItem
+import 'package:kynnovate/Models/news_item.dart';
+import 'package:kynnovate/globals.dart'; // Assuming you have a class called NewsItem
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsItem newsItem;
@@ -11,7 +15,12 @@ class NewsDetailScreen extends StatefulWidget {
 }
 
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
-  bool isLiked = false; // Default state is "not liked"
+  bool isLiked = false;
+
+  @override
+  void initState() {
+    if (!globalloadedvariables) fetchUserDetails();
+  }
 
   // Function to toggle the like state
   void toggleLike() {
@@ -19,20 +28,69 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       isLiked = !isLiked;
     });
 
-    // Call a placeholder function to update the like status in Firebase
     updateLikeInFirebase(widget.newsItem);
   }
 
-  // Empty function to update like status in Firebase
   Future<void> updateLikeInFirebase(NewsItem newsItem) async {
-    // Placeholder for Firebase update logic in the future
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final String userId = user.uid;
+
+        // Add author only if it doesn't exist
+        if (!globalUserData['likedauthors'].contains(newsItem.author)) {
+          globalUserData['likedauthors'].add(newsItem.author);
+          await FirebaseFirestore.instance
+              .collection('User')
+              .doc(userId)
+              .update({'likedauthors': globalUserData['likedauthors']});
+        }
+
+        // Add content only if it doesn't exist
+        if (!globalUserData['likedcontent'].contains(newsItem.category)) {
+          globalUserData['likedcontent'].add(newsItem.category);
+          await FirebaseFirestore.instance
+              .collection('User')
+              .doc(userId)
+              .update({'likedcontent': globalUserData['likedcontent']});
+        }
+
+        // Add news channel only if it doesn't exist
+        if (!globalUserData['likednewschannels']
+            .contains(newsItem.sourceName)) {
+          globalUserData['likednewschannels'].add(newsItem.sourceName);
+          await FirebaseFirestore.instance
+              .collection('User')
+              .doc(userId)
+              .update(
+                  {'likednewschannels': globalUserData['likednewschannels']});
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Added successfully')),
+        );
+      }
+    } catch (e) {
+      print("Error updating item: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add item')),
+      );
+    }
+
+    print('Database updated');
     print("Updating like status in Firebase for ${newsItem.title}");
   }
 
-  // Dummy function for the Read More button
-  void dummyReadMore() {
-    // Placeholder for future URL launching functionality
-    print("Read More button pressed, but URL functionality is disabled for now.");
+  Future<void> openLink(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } else {
+      // Show an error message if the URL cannot be opened
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not launch $url')),
+      );
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -45,14 +103,15 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
         ),
         title: Text(widget.newsItem.title),
       ),
-      body: Stack(  // Use a stack to layer the background image and content
+      body: Stack(
+        // Use a stack to layer the background image and content
         children: [
           // Background image (centered and scaled)
           Positioned.fill(
             child: Image.network(
               widget.newsItem.imageUrl,
-              fit: BoxFit.cover,  // Ensure the image covers the area
-              alignment: Alignment.center,  // Focus on the center
+              fit: BoxFit.cover, // Ensure the image covers the area
+              alignment: Alignment.center, // Focus on the center
             ),
           ),
           // White transparent overlay to ensure text visibility
@@ -74,7 +133,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,  // Black for the title
+                      color: Colors.black, // Black for the title
                     ),
                   ),
                   SizedBox(height: 8),
@@ -83,27 +142,43 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                     widget.newsItem.description,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white,  // White for the description
+                      color: Colors.white, // White for the description
                     ),
                   ),
-                  SizedBox(height: 16),  // Add some space before the like button
+                  SizedBox(height: 16), // Add some space before the like button
                   // Like button with Heart icon
                   Center(
                     child: ElevatedButton.icon(
-                      onPressed: toggleLike,  // Toggle like on press
+                      onPressed: toggleLike, // Toggle like on press
                       icon: Icon(
-                        isLiked ? Icons.favorite : Icons.favorite_border,  // Change heart icon based on the like state
-                        color: isLiked ? Colors.red : Colors.grey,  // Color change when liked
+                        isLiked
+                            ? Icons.favorite
+                            : Icons
+                                .favorite_border, // Change heart icon based on the like state
+                        color: isLiked
+                            ? Colors.red
+                            : Colors.grey, // Color change when liked
                       ),
                       label: Text(isLiked ? 'Liked' : 'Like'),
                     ),
                   ),
                   SizedBox(height: 16),
-                  // "Read More" button (Dummy)
+                  // "Read More" button
                   Center(
                     child: ElevatedButton(
-                      onPressed: dummyReadMore,  // Placeholder function
-                      child: Text('Read More'),
+                      onPressed: () async {
+                        if (await canLaunchUrl(
+                            Uri.parse(widget.newsItem.link))) {
+                          launchUrl(Uri.parse(widget.newsItem.link),
+                              mode: LaunchMode.externalApplication);
+                        } else {
+                          launchUrl(
+                              Uri.parse(
+                                  'https://www.youtube.com/watch?v=__j-G-rqWlU'),
+                              mode: LaunchMode.externalApplication);
+                        }
+                      },
+                      child: const Text('Read More'),
                     ),
                   ),
                 ],

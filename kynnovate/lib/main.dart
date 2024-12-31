@@ -86,10 +86,16 @@ class _MyAppState extends State<MyApp> {
   int currentTheme = 1; // 1 for Light, 0 for Dark
 
   // Method to toggle theme
-  void toggleTheme() {
-    setState(() {
-      currentTheme = (currentTheme == 1) ? 0 : 1; // Toggle theme
-    });
+  void toggleTheme(int controll) {
+    if (controll == 1) {
+      setState(() {
+        currentTheme = (currentTheme == 1) ? 0 : 1; // Toggle theme
+      });
+    } else {
+      setState(() {
+        currentTheme = currentTheme;
+      });
+    }
   }
 
   @override
@@ -107,13 +113,9 @@ class _MyAppState extends State<MyApp> {
             return SplashScreen();
           }
           if (snapshot.hasData) {
-<<<<<<< HEAD
             return HomePage(toggleTheme: toggleTheme);
-=======
-            // return HomePage(toggleTheme: toggleTheme);
->>>>>>> 9f31e0fb7b7eda758796b8efc1631ffcb6522e45
             // return KidsNewsPage();
-            return SlideshowScreen();
+            // return SlideshowScreen();
           } else {
             return SignInPage();
           }
