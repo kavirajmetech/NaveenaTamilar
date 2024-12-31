@@ -5,7 +5,7 @@
    
     <application
         android:enableOnBackInvokedCallback="true"
-        android:label="news app"
+        android:label="Namadhu News"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
