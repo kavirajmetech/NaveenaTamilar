@@ -25,33 +25,6 @@
 //     fetchArticles();
 //   }
 
-<<<<<<< HEAD
-  Future<void> fetchArticles() async {
-    List<NewsItem> allNews = await fetchMultipleRssFeeds([
-      'https://www.dinakaran.com/feed/',
-      'https://timesofindia.indiatimes.com/rss.cms',
-      'https://www.thanthitv.com/feed',
-      'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
-      'https://www.indiatoday.in/rss',
-      'https://feeds.bbci.co.uk/news/world/rss.xml',
-      'https://www.hindutamil.in/rss',
-      'https://www.dinamani.com/rss',
-      'https://feeds.nbcnews.com/nbcnews/public/news',
-      'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
-      'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
-      'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
-      'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
-      'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
-      'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
-    ]);
-    List<NewsItem> fetchedArticles = fetchRandomNews(allNews);
-
-    for (var article in fetchedArticles) {
-      String imageUrl =
-          article.imageUrl.isNotEmpty ? article.imageUrl : 'assets/login.png';
-
-      await narrateArticle(article.description);
-=======
 //   Future<void> fetchArticles() async {
 //     List<NewsItem> allNews = await fetchMultipleRssFeeds([
 //       'https://www.dinakaran.com/feed/',
@@ -79,7 +52,6 @@
 
 //       // Generate TTS audio file
 //       await narrateArticle(article.description);
->>>>>>> dde25dbcbb9fbef8b1c44c3397502186e3fdae24
 
 //       article = NewsItem(
 //         title: article.title,
@@ -104,25 +76,6 @@
 //     return allNewsItems;
 //   }
 
-<<<<<<< HEAD
-  Future<List<NewsItem>> fetchRssFeed(String url) async {
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final document = xml.XmlDocument.parse(response.body);
-        final items = document.findAllElements('item');
-        return items.map((element) => NewsItem.fromXml(element)).toList();
-      } else {
-        print(
-            'Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
-        return [];
-      }
-    } catch (e) {
-      print('Error fetching RSS feed from $url: $e');
-      return [];
-    }
-  }
-=======
 //   Future<List<NewsItem>> fetchRssFeed(String url) async {
 //     try {
 //       final response = await http.get(Uri.parse(url));
@@ -139,7 +92,6 @@
 //       return [];
 //     }
 //   }
->>>>>>> dde25dbcbb9fbef8b1c44c3397502186e3fdae24
 
 //   List<NewsItem> fetchRandomNews(List<NewsItem> allNews) {
 //     final random = Random();
@@ -158,17 +110,6 @@
 //     await flutterTts.synthesizeToFile(text, path);
 //   }
 
-<<<<<<< HEAD
-  Future<void> playAudio(String text) async {
-    final directory = await getApplicationDocumentsDirectory();
-    String path = '${directory.path}/${text.hashCode}.mp3';
-    if (File(path).existsSync()) {
-      await audioPlayer.play(DeviceFileSource(path));
-    } else {
-      print("Audio file not found: $path");
-    }
-  }
-=======
 //   Future<void> playAudio(String text) async {
 //     final directory = await getApplicationDocumentsDirectory();
 //     String path = '${directory.path}/${text.hashCode}.mp3';
@@ -178,7 +119,6 @@
 //       print("Audio file not found: $path");
 //     }
 //   }
->>>>>>> dde25dbcbb9fbef8b1c44c3397502186e3fdae24
 
 //   @override
 //   void dispose() {
@@ -186,63 +126,6 @@
 //     super.dispose();
 //   }
 
-<<<<<<< HEAD
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('News Slideshow')),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : PageView.builder(
-              itemCount: articles.length,
-              onPageChanged: (index) {
-                audioPlayer
-                    .stop(); // Stop any currently playing audio when the page changes
-              },
-              itemBuilder: (context, index) {
-                final article = articles[index];
-                return Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: article.imageUrl.startsWith('assets')
-                          ? AssetImage(article.imageUrl)
-                          : NetworkImage(article.imageUrl) as ImageProvider,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(16.0),
-                        color: Colors.black54,
-                        child: Column(
-                          children: [
-                            Text(article.title,
-                                style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white)),
-                            SizedBox(height: 10),
-                            Text(article.description,
-                                style: TextStyle(color: Colors.white)),
-                            SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: () => playAudio(article.description),
-                              child: Text('Listen'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-    );
-  }
-}
-=======
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -292,4 +175,3 @@
 //     );
 //   }
 // }
->>>>>>> dde25dbcbb9fbef8b1c44c3397502186e3fdae24

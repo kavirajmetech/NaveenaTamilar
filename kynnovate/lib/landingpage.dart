@@ -124,7 +124,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      // body: NewsListScreen(),
+      body: NewsListScreen(),
     );
   }
 }
