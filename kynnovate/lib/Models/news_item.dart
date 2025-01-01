@@ -7,7 +7,7 @@
 //   final String description;
 //   final String imageUrl;
 //   final String author;
-//   final String source_name;
+//   final String sourceName;
 //   final String category;
 
 //   NewsItem({
@@ -16,7 +16,7 @@
 //     required this.description,
 //     required this.imageUrl,
 //     required this.author,
-//     required this.source_name,
+//     required this.sourceName,
 //     required this.category,
 //   });
 
@@ -59,7 +59,7 @@
 //         author: element.findElements('author').isNotEmpty
 //             ? element.findElements('author').single.text
 //             : 'Unknown Author',
-//         source_name: element.findElements('source').isNotEmpty
+//         sourceName: element.findElements('source').isNotEmpty
 //             ? element.findElements('source').single.text
 //             : 'open Source',
 //         category: element.findElements('category').isNotEmpty
