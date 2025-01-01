@@ -5,7 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import '../models/news_item.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
-import 'package:kynnovate/landingpage.dart'; // Import the HomeScreen from landingpage.dart
+import 'package:kynnovate/landingpage.dart';
 
 class SlideshowScreen extends StatefulWidget {
   @override
@@ -60,7 +60,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       setState(() {
         articles = fetchedArticles;
         isLoading = false;
-        currentBatchStartIndex = articles.length; // Set the batch start index
+        currentBatchStartIndex = articles.length;
       });
 
       print("Initial articles fetched: ${articles.length}");
@@ -89,8 +89,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       setState(() {
         articles.addAll(fetchedArticles);
         isLoading = false;
-        currentBatchStartIndex =
-            articles.length; // Update the batch start index
+        currentBatchStartIndex = articles.length;
       });
 
       print("More articles fetched: ${fetchedArticles.length}");
@@ -147,9 +146,8 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     });
   }
 
-  int currentTheme = 1; // 1 for Light, 0 for Dark
+  int currentTheme = 1;
 
-  // Method to toggle theme
   void toggleTheme(int controll) {
     if (controll == 1) {
       setState(() {
@@ -194,7 +192,6 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                   speak(articles[index].description);
                 }
 
-                // Fetch more articles when user swipes past the 5th slide
                 if (index == currentBatchStartIndex - 5 &&
                     !isLoading &&
                     totalArticlesFetched < articles.length + articlesPerBatch) {

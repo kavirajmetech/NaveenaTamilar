@@ -1,150 +1,3 @@
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:xml/xml.dart' as xml;
-// import 'package:kynnovate/Models/news_item.dart';
-
-// class CategoryPage extends StatelessWidget {
-//   final String tag;
-
-//   CategoryPage({required this.tag});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Category: $tag'),
-//       ),
-//       body: Center(
-//         child: Text('News for $tag'),
-//       ),
-//     );
-//   }
-// }
-
-// class _CategoryPageState extends State<CategoryPage> {
-//   List<NewsItem> newsItems = [];
-//   bool isLoading = true;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     loadNewsForTag(widget.tag);
-//   }
-
-//   Future<void> loadNewsForTag(String tag) async {
-//     try {
-//       // Load RSS URLs from JSON
-//       String jsonString = await DefaultAssetBundle.of(context).loadString('assets/rssList.json');
-//       Map<String, dynamic> rssData = json.decode(jsonString);
-
-//       List<String> urls = getUrlsForTag(tag, rssData);
-
-//       if (urls.isNotEmpty) {
-//         List<NewsItem> fetchedNews = await fetchMultipleRssFeeds(urls);
-//         setState(() {
-//           newsItems = fetchedNews;
-//           isLoading = false;
-//         });
-//       } else {
-//         throw Exception('No RSS URLs found for tag: $tag');
-//       }
-//     } catch (e) {
-//       print('Error loading news for tag $tag: $e');
-//       setState(() {
-//         isLoading = false;
-//       });
-//     }
-//   }
-
-//   List<String> getUrlsForTag(String tag, Map<String, dynamic> rssData) {
-//     List<String> urls = [];
-
-//     if (rssData['categories'][tag] is List) {
-//       urls = List<String>.from(rssData['categories'][tag]);
-//     } else if (rssData['categories'][tag] is Map) {
-//       Map<String, dynamic> subcategories = rssData['categories'][tag];
-//       for (var subList in subcategories.values) {
-//         urls.addAll(List<String>.from(subList));
-//       }
-//     }
-
-//     return urls;
-//   }
-
-//   Future<List<NewsItem>> fetchRssFeed(String url) async {
-//     try {
-//       final response = await http.get(Uri.parse(url));
-//       if (response.statusCode == 200) {
-//         final document = xml.XmlDocument.parse(response.body);
-//         final items = document.findAllElements('item');
-//         return items.map((element) => NewsItem.fromXml(element)).toList();
-//       } else {
-//         print('Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
-//         return [];
-//       }
-//     } catch (e) {
-//       print('Error fetching RSS feed from $url: $e');
-//       return [];
-//     }
-//   }
-
-//   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
-//     List<NewsItem> allNewsItems = [];
-//     List<String> failedUrls = [];
-
-//     for (String url in urls) {
-//       try {
-//         final newsItems = await fetchRssFeed(url);
-//         if (newsItems.isNotEmpty) {
-//           allNewsItems.addAll(newsItems);
-//         } else {
-//           failedUrls.add(url);
-//         }
-//       } catch (e) {
-//         failedUrls.add(url);
-//         print('Error fetching from $url: $e');
-//       }
-//     }
-
-//     if (allNewsItems.isEmpty && failedUrls.isNotEmpty) {
-//       throw Exception('Failed to fetch news from any source');
-//     }
-
-//     return allNewsItems;
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(widget.tag),
-//       ),
-//       body: isLoading
-//           ? const Center(child: CircularProgressIndicator())
-//           : newsItems.isEmpty
-//               ? const Center(child: Text('No news available'))
-//               : ListView.builder(
-//                   itemCount: newsItems.length,
-//                   itemBuilder: (context, index) {
-//                     final item = newsItems[index];
-//                     return ListTile(
-//                       leading: item.imageUrl != null
-//                           ? Image.network(item.imageUrl!, width: 50, height: 50, fit: BoxFit.cover)
-//                           : const Icon(Icons.image, size: 50),
-//                       title: Text(item.title ?? 'No Title'),
-//                       subtitle: Text(item.description ?? 'No Description'),
-//                       trailing: const Icon(Icons.arrow_forward),
-//                       onTap: () {
-//                         // Handle navigation or open link
-//                       },
-//                     );
-//                   },
-//                 ),
-//     );
-//   }
-// }
-
 import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -161,8 +14,6 @@ import 'todays_page.dart';
 
 class CategoryPage extends StatefulWidget {
   final String category;
-
-  // Constructor for CategoryPage
   CategoryPage({required this.category});
 
   @override
@@ -189,10 +40,8 @@ class _CategoryPageState extends State<CategoryPage> {
   late Timer _timer;
   bool isLoading = true;
   String errorMessage = '';
-  late ScrollController
-      _scrollController; // Scroll controller for auto-scrolling
+  late ScrollController _scrollController;
 
-  // Fetch data method
   Future<List<NewsItem>> fetchRssFeed(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
@@ -211,7 +60,6 @@ class _CategoryPageState extends State<CategoryPage> {
     }
   }
 
-  // Fetch multiple RSS feeds
   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
     List<NewsItem> allNewsItems = [];
     List<String> failedUrls = [];
@@ -237,7 +85,6 @@ class _CategoryPageState extends State<CategoryPage> {
     return allNewsItems;
   }
 
-  // Refresh method to reload data
   Future<void> _refreshNews() async {
     setState(() {
       isLoading = true;
@@ -266,17 +113,14 @@ class _CategoryPageState extends State<CategoryPage> {
     _refreshNews();
     _scrollController = ScrollController();
 
-    // Set up the timer for automatic scrolling
     _timer = Timer.periodic(Duration(seconds: 3), (timer) {
       if (_scrollController.hasClients) {
         double maxScroll = _scrollController.position.maxScrollExtent;
         double currentScroll = _scrollController.position.pixels;
 
-        // If the scroll position has reached the maximum, reset to the beginning
         if (currentScroll == maxScroll) {
           _scrollController.jumpTo(0);
         } else {
-          // Scroll by a certain amount to the right
           _scrollController.animateTo(
             currentScroll + 360.0,
             duration: Duration(seconds: 1),
@@ -290,7 +134,7 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   void dispose() {
     _timer.cancel();
-    _scrollController.dispose(); // Dispose of the scroll controller
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -313,7 +157,6 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 
-  // Error widget
   Widget _buildErrorWidget() {
     return Center(
       child: Column(
@@ -337,11 +180,9 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   Widget _buildNewsItem(NewsItem item) {
-    double boxWidth = 350; // Adjust this to change the width of the box
-
+    double boxWidth = 350;
     return GestureDetector(
       onTap: () {
-        // Navigate to NewsDetailScreen and pass the NewsItem
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -353,15 +194,14 @@ class _CategoryPageState extends State<CategoryPage> {
         margin: EdgeInsets.all(8.0),
         child: Stack(
           children: [
-            // Image with adjustable width and BoxFit.cover
             Image.network(
               item.imageUrl,
-              width: boxWidth, // Adjusted width
-              height: 250, // Fixed height
-              fit: BoxFit.cover, // Ensure the image covers the container
+              width: boxWidth,
+              height: 250,
+              fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
-                  color: Colors.grey[300], // Placeholder in case of error
+                  color: Colors.grey[300],
                   height: 250,
                   width: boxWidth,
                   child: const Icon(Icons.image_not_supported),
@@ -370,34 +210,33 @@ class _CategoryPageState extends State<CategoryPage> {
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Container(
-                  color: Colors.grey[200], // Placeholder while loading
+                  color: Colors.grey[200],
                   height: 250,
                   width: boxWidth,
                   child: const Center(child: CircularProgressIndicator()),
                 );
               },
             ),
-            // Text overlay with gradient background at the bottom
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
               child: Container(
                 padding: EdgeInsets.all(8.0),
-                width: boxWidth, // Ensure overlay matches width of the image
+                width: boxWidth,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.transparent, // Transparent at the top
-                      Colors.grey.withOpacity(0.7), // Greyish at the bottom
+                      Colors.transparent,
+                      Colors.grey.withOpacity(0.7),
                     ],
                   ),
                 ),
                 child: Text(
                   item.title.length > 50
-                      ? "${item.title.substring(0, 50)}..." // Truncate text after 2 lines
+                      ? "${item.title.substring(0, 50)}..."
                       : item.title,
                   style: const TextStyle(
                     color: Colors.white,
@@ -405,9 +244,8 @@ class _CategoryPageState extends State<CategoryPage> {
                     fontSize: 16.0,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2, // Limit the text to 2 lines
-                  softWrap:
-                      true, // Ensure it wraps to the next line if necessary
+                  maxLines: 2,
+                  softWrap: true,
                 ),
               ),
             ),
@@ -417,7 +255,6 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 
-  // Build all news widget
   Widget _buildAllNews() {
     return FutureBuilder<List<NewsItem>>(
       future: futureNewsItems,
@@ -487,40 +324,6 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 
-  // Widget _buildHorizontalList(List<NewsItem> newsItems) {
-  //   return SizedBox(
-  //     height: 150,
-  //     child: ListView.builder(
-  //       scrollDirection: Axis.horizontal,
-  //       itemCount: newsItems.length,
-  //       itemBuilder: (context, index) {
-  //         final newsItem = newsItems[index];
-  //         return Container(
-  //           width: 200,
-  //           margin: const EdgeInsets.only(left: 16),
-  //           child: Card(
-  //             elevation: 5,
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 _buildNewsImage(newsItem.imageUrl, 100.0),
-  //                 Padding(
-  //                   padding: const EdgeInsets.all(8.0),
-  //                   child: Text(
-  //                     newsItem.title,
-  //                     maxLines: 2,
-  //                     overflow: TextOverflow.ellipsis,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
   Widget _buildNewsImage(String imageUrl, double height) {
     return imageUrl.isNotEmpty
         ? Image.network(
@@ -568,7 +371,6 @@ class _CategoryPageState extends State<CategoryPage> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Navigate to CategoryPage with the selected category
               Navigator.push(
                 context,
                 MaterialPageRoute(

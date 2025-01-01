@@ -243,14 +243,7 @@ Map<String, String> categories = {
   "kn": "ವರ್ಗಗಳು",
   "hi": "श्रेणियाँ",
 };
-// Map<String, String> location = {
-//   "en": "Location",
-//   "ta": "இடம்",
-//   "ml": "ലൊക്കേഷൻ",
-//   "te": "స్థానం",
-//   "kn": "ಸ್ಥಳ",
-//   "hi": "स्थान",
-// };
+
 Map<String, String> today = {
   "en": "Today's",
   "ta": "இன்றைய",

@@ -14,12 +14,7 @@ class _CollectDetailsState extends State<CollectDetails> {
   String? _selectedState;
   String? _selectedDistrict;
 
-  // Example lists for state and district
-  final List<String> _states = [
-    'State 1',
-    'State 2',
-    'State 3'
-  ]; // Replace with actual data
+  final List<String> _states = ['State 1', 'State 2', 'State 3'];
   final Map<String, List<String>> _districts = {
     'State 1': ['District 1A', 'District 1B'],
     'State 2': ['District 2A', 'District 2B'],
@@ -35,7 +30,6 @@ class _CollectDetailsState extends State<CollectDetails> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // First Name Field
               TextField(
                 controller: _firstNameController,
                 decoration: InputDecoration(
@@ -44,8 +38,6 @@ class _CollectDetailsState extends State<CollectDetails> {
                 ),
               ),
               SizedBox(height: 16),
-
-              // Last Name Field
               TextField(
                 controller: _lastNameController,
                 decoration: InputDecoration(
@@ -54,15 +46,12 @@ class _CollectDetailsState extends State<CollectDetails> {
                 ),
               ),
               SizedBox(height: 16),
-
-              // State Dropdown
               DropdownButtonFormField<String>(
                 value: _selectedState,
                 onChanged: (newValue) {
                   setState(() {
                     _selectedState = newValue;
-                    _selectedDistrict =
-                        null; // Reset district when state changes
+                    _selectedDistrict = null;
                   });
                 },
                 items: _states.map((state) {
@@ -77,8 +66,6 @@ class _CollectDetailsState extends State<CollectDetails> {
                 ),
               ),
               SizedBox(height: 16),
-
-              // District Dropdown
               DropdownButtonFormField<String>(
                 value: _selectedDistrict,
                 onChanged: (newValue) {
@@ -100,11 +87,8 @@ class _CollectDetailsState extends State<CollectDetails> {
                 ),
               ),
               SizedBox(height: 16),
-
-              // Submit Button
               ElevatedButton(
                 onPressed: () async {
-                  // Collect all the details (e.g., from controllers and dropdowns)
                   await FirebaseFirestore.instance
                       .collection('User')
                       .doc(globalUserId)
@@ -125,9 +109,6 @@ class _CollectDetailsState extends State<CollectDetails> {
                     context,
                     MaterialPageRoute(builder: (context) => SplashScreen()),
                   );
-
-                  // Navigate to the next page or perform other actions
-                  // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NextPage()));
                 },
                 child: Text('Submit'),
               ),

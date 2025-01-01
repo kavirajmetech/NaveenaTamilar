@@ -1,135 +1,3 @@
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:kynnovate/Models/news_item.dart';
-// import 'news_details_screen.dart';  // Assuming you have a detail screen
-
-// class LocationPage extends StatelessWidget {
-//   final String locationTag;
-
-//   LocationPage({required this.locationTag});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Location: $locationTag'),
-//       ),
-//       body: Center(
-//         child: Text('News for $locationTag'),
-//       ),
-//     );
-//   }
-// }
-
-// // class _LocationPageState extends State<LocationPage> {
-// //   String selectedLocation = "Chennai"; // Default location
-// //   late Future<List<NewsItem>> locationNewsItems;
-
-// //   @override
-// //   void initState() {
-// //     super.initState();
-// //     _loadLocationNews(selectedLocation);
-// //   }
-
-// //   // Load news based on location
-// //   Future<void> _loadLocationNews(String location) async {
-// //     final response = await http.get(Uri.parse('assets/rssList.json'));
-// //     final data = json.decode(response.body);
-// //     final locationUrls = data['categories']['Regional'][location];
-// //     locationNewsItems = fetchRssFeed(locationUrls);
-// //     setState(() {});
-// //   }
-
-// //     List<NewsItem> parseRss(String xmlContent) {
-// //     // Your XML parsing logic here
-// //     // Returning an empty list for simplicity
-// //     return [];
-// //   }
-
-// //   // Fetch RSS feed
-// //   Future<List<NewsItem>> fetchRssFeed(List<String> urls) async {
-// //     List<NewsItem> allNewsItems = [];
-// //     for (String url in urls) {
-// //       final response = await http.get(Uri.parse(url));
-// //       if (response.statusCode == 200) {
-// //         // Parse the XML response here
-// //         allNewsItems.addAll(parseRss(response.body));
-// //       }
-// //     }
-// //     return allNewsItems;
-// //   }
-
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Scaffold(
-// //       appBar: AppBar(title: Text('Location: $selectedLocation')),
-// //       body: Column(
-// //         children: [
-// //           // Dropdown to select location
-// //           DropdownButton<String>(
-// //             value: selectedLocation,
-// //             onChanged: (String? newValue) {
-// //               if (newValue != null) {
-// //                 setState(() {
-// //                   selectedLocation = newValue;
-// //                 });
-// //                 _loadLocationNews(newValue);
-// //               }
-// //             },
-// //             items: <String>[
-// //               'Chennai', 'Cuddalore', 'Thiruvannamalai', 'Sivakasi', 'Pondicherry'
-// //             ].map<DropdownMenuItem<String>>((String value) {
-// //               return DropdownMenuItem<String>(
-// //                 value: value,
-// //                 child: Text(value),
-// //               );
-// //             }).toList(),
-// //           ),
-// //           // News list based on location
-// //           Expanded(
-// //             child: FutureBuilder<List<NewsItem>>(
-// //               future: locationNewsItems,
-// //               builder: (context, snapshot) {
-// //                 if (snapshot.connectionState == ConnectionState.waiting) {
-// //                   return Center(child: CircularProgressIndicator());
-// //                 }
-// //                 if (snapshot.hasError) {
-// //                   return Center(child: Text('Error loading news'));
-// //                 }
-// //                 final items = snapshot.data ?? [];
-// //                 return ListView.builder(
-// //                   itemCount: items.length,
-// //                   itemBuilder: (context, index) {
-// //                     return GestureDetector(
-// //                       onTap: () {
-// //                         Navigator.push(
-// //                           context,
-// //                           MaterialPageRoute(
-// //                             builder: (context) => NewsDetailScreen(newsItem: items[index]),
-// //                           ),
-// //                         );
-// //                       },
-// //                       child: Card(
-// //                         child: Column(
-// //                           children: [
-// //                             Image.network(items[index].imageUrl),
-// //                             Text(items[index].title),
-// //                           ],
-// //                         ),
-// //                       ),
-// //                     );
-// //                   },
-// //                 );
-// //               },
-// //             ),
-// //           ),
-// //         ],
-// //       ),
-// //     );
-// //   }
-// // }
-
 import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -140,7 +8,6 @@ import 'category_page.dart';
 import 'latest_news_page.dart';
 import 'location_page.dart';
 import 'news_details_screen.dart';
-// import 'news_item.dart';
 import 'dart:async';
 
 import 'todays_page.dart';
@@ -148,7 +15,6 @@ import 'todays_page.dart';
 class LocationPage extends StatefulWidget {
   final String locationTag;
 
-  // Constructor for LocationPage
   LocationPage({required this.locationTag});
 
   @override
@@ -175,10 +41,8 @@ class _LocationPageState extends State<LocationPage> {
   late Timer _timer;
   bool isLoading = true;
   String errorMessage = '';
-  late ScrollController
-      _scrollController; // Scroll controller for auto-scrolling
+  late ScrollController _scrollController;
 
-  // Fetch data method
   Future<List<NewsItem>> fetchRssFeed(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
@@ -197,7 +61,6 @@ class _LocationPageState extends State<LocationPage> {
     }
   }
 
-  // Fetch multiple RSS feeds
   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
     List<NewsItem> allNewsItems = [];
     List<String> failedUrls = [];
@@ -223,7 +86,6 @@ class _LocationPageState extends State<LocationPage> {
     return allNewsItems;
   }
 
-  // Refresh method to reload data
   Future<void> _refreshNews() async {
     setState(() {
       isLoading = true;
@@ -252,17 +114,14 @@ class _LocationPageState extends State<LocationPage> {
     _refreshNews();
     _scrollController = ScrollController();
 
-    // Set up the timer for automatic scrolling
     _timer = Timer.periodic(Duration(seconds: 3), (timer) {
       if (_scrollController.hasClients) {
         double maxScroll = _scrollController.position.maxScrollExtent;
         double currentScroll = _scrollController.position.pixels;
 
-        // If the scroll position has reached the maximum, reset to the beginning
         if (currentScroll == maxScroll) {
           _scrollController.jumpTo(0);
         } else {
-          // Scroll by a certain amount to the right
           _scrollController.animateTo(
             currentScroll + 360.0,
             duration: Duration(seconds: 1),
@@ -276,7 +135,7 @@ class _LocationPageState extends State<LocationPage> {
   @override
   void dispose() {
     _timer.cancel();
-    _scrollController.dispose(); // Dispose of the scroll controller
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -299,7 +158,6 @@ class _LocationPageState extends State<LocationPage> {
     );
   }
 
-  // Error widget
   Widget _buildErrorWidget() {
     return Center(
       child: Column(
@@ -323,11 +181,10 @@ class _LocationPageState extends State<LocationPage> {
   }
 
   Widget _buildNewsItem(NewsItem item) {
-    double boxWidth = 350; // Adjust this to change the width of the box
+    double boxWidth = 350;
 
     return GestureDetector(
       onTap: () {
-        // Navigate to NewsDetailScreen and pass the NewsItem
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -339,15 +196,14 @@ class _LocationPageState extends State<LocationPage> {
         margin: EdgeInsets.all(8.0),
         child: Stack(
           children: [
-            // Image with adjustable width and BoxFit.cover
             Image.network(
               item.imageUrl,
-              width: boxWidth, // Adjusted width
-              height: 250, // Fixed height
-              fit: BoxFit.cover, // Ensure the image covers the container
+              width: boxWidth,
+              height: 250,
+              fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
-                  color: Colors.grey[300], // Placeholder in case of error
+                  color: Colors.grey[300],
                   height: 250,
                   width: boxWidth,
                   child: const Icon(Icons.image_not_supported),
@@ -356,34 +212,33 @@ class _LocationPageState extends State<LocationPage> {
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Container(
-                  color: Colors.grey[200], // Placeholder while loading
+                  color: Colors.grey[200],
                   height: 250,
                   width: boxWidth,
                   child: const Center(child: CircularProgressIndicator()),
                 );
               },
             ),
-            // Text overlay with gradient background at the bottom
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
               child: Container(
                 padding: EdgeInsets.all(8.0),
-                width: boxWidth, // Ensure overlay matches width of the image
+                width: boxWidth,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.transparent, // Transparent at the top
-                      Colors.grey.withOpacity(0.7), // Greyish at the bottom
+                      Colors.transparent,
+                      Colors.grey.withOpacity(0.7),
                     ],
                   ),
                 ),
                 child: Text(
                   item.title.length > 50
-                      ? "${item.title.substring(0, 50)}..." // Truncate text after 2 lines
+                      ? "${item.title.substring(0, 50)}..."
                       : item.title,
                   style: const TextStyle(
                     color: Colors.white,
@@ -391,9 +246,8 @@ class _LocationPageState extends State<LocationPage> {
                     fontSize: 16.0,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2, // Limit the text to 2 lines
-                  softWrap:
-                      true, // Ensure it wraps to the next line if necessary
+                  maxLines: 2,
+                  softWrap: true,
                 ),
               ),
             ),
@@ -403,7 +257,6 @@ class _LocationPageState extends State<LocationPage> {
     );
   }
 
-  // Build all news widget
   Widget _buildAllNews() {
     return FutureBuilder<List<NewsItem>>(
       future: futureNewsItems,
@@ -473,40 +326,6 @@ class _LocationPageState extends State<LocationPage> {
     );
   }
 
-  // Widget _buildHorizontalList(List<NewsItem> newsItems) {
-  //   return SizedBox(
-  //     height: 150,
-  //     child: ListView.builder(
-  //       scrollDirection: Axis.horizontal,
-  //       itemCount: newsItems.length,
-  //       itemBuilder: (context, index) {
-  //         final newsItem = newsItems[index];
-  //         return Container(
-  //           width: 200,
-  //           margin: const EdgeInsets.only(left: 16),
-  //           child: Card(
-  //             elevation: 5,
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 _buildNewsImage(newsItem.imageUrl, 100.0),
-  //                 Padding(
-  //                   padding: const EdgeInsets.all(8.0),
-  //                   child: Text(
-  //                     newsItem.title,
-  //                     maxLines: 2,
-  //                     overflow: TextOverflow.ellipsis,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
   Widget _buildNewsImage(String imageUrl, double height) {
     return imageUrl.isNotEmpty
         ? Image.network(
@@ -553,7 +372,6 @@ class _LocationPageState extends State<LocationPage> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Navigate to LocationPage with the selected category
               Navigator.push(
                 context,
                 MaterialPageRoute(
