@@ -72,8 +72,11 @@ class _MemePageState extends State<MemePage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return GridView.builder(
+              padding: EdgeInsets.all(10.0),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
               ),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
@@ -91,8 +94,13 @@ class _MemePageState extends State<MemePage> {
                     );
                   },
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    elevation: 5,
                     child: Container(
                       decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15.0),
                         image: DecorationImage(
                           image: NetworkImage(meme.imageUrl),
                           fit: BoxFit.cover,
