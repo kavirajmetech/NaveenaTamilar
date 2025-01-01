@@ -228,10 +228,8 @@ class _UserprofileState extends State<Userprofile> {
             .get();
 
         if (userDoc.exists) {
-          setState(() {
-            globalUserData = userDoc.data() as Map<String, dynamic>;
-            globalloadedvariables = true;
-          });
+          globalUserData = userDoc.data() as Map<String, dynamic>;
+          globalloadedvariables = true;
         } else {
           print("No user data found in Firestore.");
         }

@@ -83,13 +83,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int currentTheme = 1; // 1 for Light, 0 for Dark
+  int currentTheme = 1;
 
-  // Method to toggle theme
   void toggleTheme(int controll) {
     if (controll == 1) {
       setState(() {
-        currentTheme = (currentTheme == 1) ? 0 : 1; // Toggle theme
+        currentTheme = (currentTheme == 1) ? 0 : 1;
       });
     } else {
       setState(() {
