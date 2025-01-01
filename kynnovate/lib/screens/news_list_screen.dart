@@ -2,12 +2,15 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
+import 'package:kynnovate/Models/news_item.dart';
+import 'package:kynnovate/config.dart';
+import 'package:kynnovate/globals.dart';
 import 'package:xml/xml.dart' as xml;
 import 'category_page.dart';
 import 'latest_news_page.dart';
 import 'location_page.dart';
 import 'news_details_screen.dart';
-import 'package:kynnovate/Models/news_item.dart';
+// import 'news_item.dart';
 import 'dart:async';
 
 import 'todays_page.dart';
@@ -23,10 +26,8 @@ class _NewsListScreenState extends State<NewsListScreen> {
   late Timer _timer;
   bool isLoading = true;
   String errorMessage = '';
-  late ScrollController
-      _scrollController; // Scroll controller for auto-scrolling
+  late ScrollController _scrollController;
 
-  // Fetch data method
   Future<List<NewsItem>> fetchRssFeed(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
@@ -45,7 +46,6 @@ class _NewsListScreenState extends State<NewsListScreen> {
     }
   }
 
-  // Fetch multiple RSS feeds
   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
     List<NewsItem> allNewsItems = [];
     List<String> failedUrls = [];
@@ -54,7 +54,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
       try {
         final newsItems = await fetchRssFeed(url);
         if (newsItems.isNotEmpty) {
-          allNewsItems.addAll(newsItems);
+          allNewsItems.addAll(newsItems.take(5));
         } else {
           failedUrls.add(url);
         }
@@ -71,7 +71,6 @@ class _NewsListScreenState extends State<NewsListScreen> {
     return allNewsItems;
   }
 
-  // Refresh method to reload data
   Future<void> _refreshNews() async {
     setState(() {
       isLoading = true;
@@ -81,6 +80,12 @@ class _NewsListScreenState extends State<NewsListScreen> {
     try {
       latestItems = fetchMultipleRssFeeds(["https://www.dinakaran.com/feed/"]);
       futureNewsItems = fetchMultipleRssFeeds([
+        'https://feeds.feedburner.com/Hindu_Tamil_tamilnadu',
+        'https://feeds.bbci.co.uk/news/world/rss.xml',
+        'https://www.thanthitv.com/feed',
+        'https://www.indiatoday.in/rss/home',
+        'https://www.dinamani.com/rss',
+        'https://feeds.nbcnews.com/nbcnews/public/news',
         'https://www.dinakaran.com/feed/',
         'https://timesofindia.indiatimes.com/rss.cms',
         'https://www.thanthitv.com/feed',
@@ -90,6 +95,12 @@ class _NewsListScreenState extends State<NewsListScreen> {
         'https://www.hindutamil.in/rss',
         'https://www.dinamani.com/rss',
         'https://feeds.nbcnews.com/nbcnews/public/news',
+        'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
+        'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
+        'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
+        'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
+        'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
+        'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
       ]);
     } catch (e) {
       setState(() {
@@ -108,17 +119,14 @@ class _NewsListScreenState extends State<NewsListScreen> {
     _refreshNews();
     _scrollController = ScrollController();
 
-    // Set up the timer for automatic scrolling
     _timer = Timer.periodic(Duration(seconds: 3), (timer) {
       if (_scrollController.hasClients) {
         double maxScroll = _scrollController.position.maxScrollExtent;
         double currentScroll = _scrollController.position.pixels;
 
-        // If the scroll position has reached the maximum, reset to the beginning
         if (currentScroll == maxScroll) {
           _scrollController.jumpTo(0);
         } else {
-          // Scroll by a certain amount to the right
           _scrollController.animateTo(
             currentScroll + 360.0,
             duration: Duration(seconds: 1),
@@ -132,7 +140,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
   @override
   void dispose() {
     _timer.cancel();
-    _scrollController.dispose(); // Dispose of the scroll controller
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -156,39 +164,9 @@ class _NewsListScreenState extends State<NewsListScreen> {
                 ],
               ),
             ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   items: const [
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.home),
-      //       label: 'Home',
-      //       backgroundColor: Colors.blueGrey,
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.search),
-      //       label: 'Search',
-      //       backgroundColor: Colors.blueGrey,
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.favorite),
-      //       label: 'Favorites',
-      //       backgroundColor: Colors.blueGrey,
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.person),
-      //       label: 'Profile',
-      //       backgroundColor: Colors.blueGrey,
-      //     ),
-      //   ],
-      //   selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-      //   unselectedItemColor: const Color.fromARGB(255, 91, 91, 91),
-      //   showSelectedLabels: true,
-      //   showUnselectedLabels: true,
-      //   type: BottomNavigationBarType.fixed,
-      // ),
     );
   }
 
-  // Error widget
   Widget _buildErrorWidget() {
     return Center(
       child: Column(
@@ -212,11 +190,9 @@ class _NewsListScreenState extends State<NewsListScreen> {
   }
 
   Widget _buildNewsItem(NewsItem item) {
-    double boxWidth = 350; // Adjust this to change the width of the box
-
+    double boxWidth = 350;
     return GestureDetector(
       onTap: () {
-        // Navigate to NewsDetailScreen and pass the NewsItem
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -228,15 +204,14 @@ class _NewsListScreenState extends State<NewsListScreen> {
         margin: EdgeInsets.all(8.0),
         child: Stack(
           children: [
-            // Image with adjustable width and BoxFit.cover
             Image.network(
               item.imageUrl,
-              width: boxWidth, // Adjusted width
-              height: 250, // Fixed height
-              fit: BoxFit.cover, // Ensure the image covers the container
+              width: boxWidth,
+              height: 250,
+              fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
-                  color: Colors.grey[300], // Placeholder in case of error
+                  color: Colors.grey[300],
                   height: 250,
                   width: boxWidth,
                   child: const Icon(Icons.image_not_supported),
@@ -245,44 +220,42 @@ class _NewsListScreenState extends State<NewsListScreen> {
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Container(
-                  color: Colors.grey[200], // Placeholder while loading
+                  color: Colors.grey[200],
                   height: 250,
                   width: boxWidth,
                   child: const Center(child: CircularProgressIndicator()),
                 );
               },
             ),
-            // Text overlay with gradient background at the bottom
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
               child: Container(
                 padding: EdgeInsets.all(8.0),
-                width: boxWidth, // Ensure overlay matches width of the image
+                width: boxWidth,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.transparent, // Transparent at the top
-                      Colors.grey.withOpacity(0.7), // Greyish at the bottom
+                      Colors.transparent,
+                      Colors.grey.withOpacity(0.7),
                     ],
                   ),
                 ),
                 child: Text(
                   item.title.length > 50
-                      ? "${item.title.substring(0, 50)}..." // Truncate text after 2 lines
+                      ? "${item.title.substring(0, 50)}..."
                       : item.title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2, // Limit the text to 2 lines
-                  softWrap:
-                      true, // Ensure it wraps to the next line if necessary
+                  maxLines: 2,
+                  softWrap: true,
                 ),
               ),
             ),
@@ -292,7 +265,6 @@ class _NewsListScreenState extends State<NewsListScreen> {
     );
   }
 
-  // Build latest news widget
   Widget _buildLatestNews() {
     return FutureBuilder<List<NewsItem>>(
       future: latestItems,
@@ -313,7 +285,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
         final items = snapshot.data!.take(5).toList();
 
         return SizedBox(
-          height: 250, // Keep the height fixed
+          height: 250,
           child: ListView.builder(
             controller: _scrollController,
             scrollDirection: Axis.horizontal,
@@ -327,7 +299,6 @@ class _NewsListScreenState extends State<NewsListScreen> {
     );
   }
 
-  // Build all news widget
   Widget _buildAllNews() {
     return FutureBuilder<List<NewsItem>>(
       future: futureNewsItems,
@@ -340,9 +311,9 @@ class _NewsListScreenState extends State<NewsListScreen> {
             ),
           );
         } else if (snapshot.hasError) {
-          return _buildSectionError('Today\'s News');
+          return _buildSectionError('Today\'s News1');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildEmptySection('Today\'s News');
+          return _buildEmptySection('Today\'s News2');
         }
         return _buildNewsList(snapshot.data!);
       },
@@ -389,7 +360,17 @@ class _NewsListScreenState extends State<NewsListScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            title,
+            () {
+              if (title == 'Latest') {
+                return latest[globalLanguageOption] ?? 'Latest';
+              } else if (title == 'Categories') {
+                return categories[globalLanguageOption] ?? 'Categories';
+              } else if (title == 'Location') {
+                return location[globalLanguageOption] ?? 'Location';
+              } else {
+                return today[globalLanguageOption] ?? 'Today\'s';
+              }
+            }(),
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           TextButton(
@@ -401,7 +382,8 @@ class _NewsListScreenState extends State<NewsListScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CategoryPage(tag: 'Politics')));
+                        builder: (context) =>
+                            CategoryPage(category: 'Politics')));
               } else if (title == 'Location') {
                 Navigator.push(
                     context,
@@ -413,7 +395,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
                     MaterialPageRoute(builder: (context) => TodaysPage()));
               }
             },
-            child: const Text('See All'),
+            child: Text(seeall[globalLanguageOption] ?? 'See All'),
           ),
         ],
       ),
@@ -501,11 +483,11 @@ class _NewsListScreenState extends State<NewsListScreen> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Navigate to CategoryPage with the selected category
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CategoryPage(tag: categories[index]),
+                  builder: (context) =>
+                      CategoryPage(category: categories[index]),
                 ),
               );
             },
@@ -546,7 +528,6 @@ class _NewsListScreenState extends State<NewsListScreen> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Navigate to LocationPage with the selected location
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -598,8 +579,18 @@ class _NewsListScreenState extends State<NewsListScreen> {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
+            subtitle: Text(
+              newsItem.date,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () {
-              // Handle news item tap
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NewsDetailScreen(newsItem: newsItem),
+                ),
+              );
             },
           ),
         );

@@ -227,6 +227,74 @@ Map<String, String> homePage = {
   "kn": "ಮುಖ್ಯ ಪುಟ",
   "hi": "होम पेज",
 };
+Map<String, String> seeall = {
+  "en": "See All",
+  "ta": "அனைத்தையும் காண்க",
+  "ml": "എല്ലാം കാണുക",
+  "te": "అన్నీ చూడండి",
+  "kn": "ಎಲ್ಲವನ್ನೂ ನೋಡಿ",
+  "hi": "सब देखें",
+};
+Map<String, String> categories = {
+  "en": "Categories",
+  "ta": "வகைகள்",
+  "ml": "വിഭാഗങ്ങൾ",
+  "te": "వర్గాలు",
+  "kn": "ವರ್ಗಗಳು",
+  "hi": "श्रेणियाँ",
+};
+
+Map<String, String> today = {
+  "en": "Today's",
+  "ta": "இன்றைய",
+  "ml": "ഇന്നത്തെ",
+  "te": "ఈరోజు",
+  "kn": "ಇಂದಿನ",
+  "hi": "आज का",
+};
+Map<String, String> latest = {
+  "en": "Latest",
+  "ta": "சமீபத்திய",
+  "ml": "ഏറ്റവും പുതിയ",
+  "te": "తాజా",
+  "kn": "ಇತ್ತೀಚಿನದು",
+  "hi": "नवीनतम",
+};
+Map<String, String> children = {
+  "en": "Children",
+  "ta": "குழந்தைகள்",
+  "ml": "കുട്ടികൾ",
+  "te": "పిల్లలు",
+  "kn": "ಮಕ್ಕಳು",
+  "hi": "बच्चे",
+};
+
+Map<String, String> favourite = {
+  "en": "Favourite",
+  "ta": "பிடித்தவை",
+  "ml": "ഇഷ്ടം",
+  "te": "ఇష్టమైనవి",
+  "kn": "ಪ್ರಿಯ",
+  "hi": "पसंदीदा",
+};
+
+Map<String, String> shorts = {
+  "en": "Shorts",
+  "ta": "சிறு வீடியோக்கள்",
+  "ml": "ചുരുങ്ങിയ വീഡിയോകൾ",
+  "te": "చిన్న వీడియోలు",
+  "kn": "ಸಣ್ಣ ವೀಡಿಯೊಗಳು",
+  "hi": "शॉर्ट्स",
+};
+
+Map<String, String> memes = {
+  "en": "Memes",
+  "ta": "மீம்ஸ்",
+  "ml": "മീമുകൾ",
+  "te": "మీమ్స్",
+  "kn": "ಮೀಮ್ಸ್",
+  "hi": "मीम्स",
+};
 
 Map<String, String> username = {
   "af": "Gebruikersnaam",

@@ -1,9 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kynnovate/Models/news_item.dart';
-import 'package:kynnovate/globals.dart'; // Assuming you have a class called NewsItem
-import 'package:url_launcher/url_launcher.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsItem newsItem;
@@ -17,12 +13,6 @@ class NewsDetailScreen extends StatefulWidget {
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
   bool isLiked = false;
 
-  @override
-  void initState() {
-    if (!globalloadedvariables) fetchUserDetails();
-  }
-
-  // Function to toggle the like state
   void toggleLike() {
     setState(() {
       isLiked = !isLiked;
@@ -32,65 +22,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   }
 
   Future<void> updateLikeInFirebase(NewsItem newsItem) async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final String userId = user.uid;
-
-        // Add author only if it doesn't exist
-        if (!globalUserData['likedauthors'].contains(newsItem.author)) {
-          globalUserData['likedauthors'].add(newsItem.author);
-          await FirebaseFirestore.instance
-              .collection('User')
-              .doc(userId)
-              .update({'likedauthors': globalUserData['likedauthors']});
-        }
-
-        // Add content only if it doesn't exist
-        if (!globalUserData['likedcontent'].contains(newsItem.category)) {
-          globalUserData['likedcontent'].add(newsItem.category);
-          await FirebaseFirestore.instance
-              .collection('User')
-              .doc(userId)
-              .update({'likedcontent': globalUserData['likedcontent']});
-        }
-
-        // Add news channel only if it doesn't exist
-        if (!globalUserData['likednewschannels']
-            .contains(newsItem.sourceName)) {
-          globalUserData['likednewschannels'].add(newsItem.sourceName);
-          await FirebaseFirestore.instance
-              .collection('User')
-              .doc(userId)
-              .update(
-                  {'likednewschannels': globalUserData['likednewschannels']});
-        }
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Added successfully')),
-        );
-      }
-    } catch (e) {
-      print("Error updating item: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add item')),
-      );
-    }
-
-    print('Database updated');
     print("Updating like status in Firebase for ${newsItem.title}");
   }
 
-  Future<void> openLink(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-    } else {
-      // Show an error message if the URL cannot be opened
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not launch $url')),
-      );
-      throw 'Could not launch $url';
-    }
+  void dummyReadMore() {
+    print(
+        "Read More button pressed, but URL functionality is disabled for now.");
   }
 
   @override
@@ -99,88 +36,149 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context), // Back button
+          onPressed: () => Navigator.pop(context),
         ),
         title: Text(widget.newsItem.title),
       ),
       body: Stack(
-        // Use a stack to layer the background image and content
         children: [
-          // Background image (centered and scaled)
+          // Background image
           Positioned.fill(
             child: Image.network(
               widget.newsItem.imageUrl,
-              fit: BoxFit.cover, // Ensure the image covers the area
-              alignment: Alignment.center, // Focus on the center
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
             ),
           ),
-          // White transparent overlay to ensure text visibility
           Positioned.fill(
             child: Container(
-              color: Colors.grey.withOpacity(0.3), // White
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.8),
+                    Colors.grey.withOpacity(0.8),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
             ),
           ),
-          // Content on top of the background image
+          // Foreground content
           SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    widget.newsItem.title,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black, // Black for the title
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  // Description
-                  Text(
-                    widget.newsItem.description,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white, // White for the description
-                    ),
-                  ),
-                  SizedBox(height: 16), // Add some space before the like button
-                  // Like button with Heart icon
-                  Center(
-                    child: ElevatedButton.icon(
-                      onPressed: toggleLike, // Toggle like on press
-                      icon: Icon(
-                        isLiked
-                            ? Icons.favorite
-                            : Icons
-                                .favorite_border, // Change heart icon based on the like state
-                        color: isLiked
-                            ? Colors.red
-                            : Colors.grey, // Color change when liked
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.newsItem.title,
+                        style: TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                      label: Text(isLiked ? 'Liked' : 'Like'),
-                    ),
+                      Image.network(
+                        widget.newsItem.imageUrl,
+                        height: 200,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 200,
+                            color: Colors.grey,
+                            child: Center(
+                              child: Icon(Icons.broken_image,
+                                  size: 50, color: Colors.white),
+                            ),
+                          );
+                        },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Date: ${widget.newsItem.date}",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Author: ${widget.newsItem.author}",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[300],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      // Description
+                      Text(
+                        widget.newsItem.description,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "Source: ${widget.newsItem.author}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Like Button
+                          ElevatedButton.icon(
+                            onPressed: toggleLike,
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            icon: Icon(
+                              isLiked ? Icons.favorite : Icons.favorite_border,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              isLiked ? 'Liked' : 'Like',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: dummyReadMore,
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              'Read More',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 16),
-                  // "Read More" button
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (await canLaunchUrl(
-                            Uri.parse(widget.newsItem.link))) {
-                          launchUrl(Uri.parse(widget.newsItem.link),
-                              mode: LaunchMode.externalApplication);
-                        } else {
-                          launchUrl(Uri.parse('https://www.dinamalar.com/'),
-                              mode: LaunchMode.externalApplication);
-                        }
-                      },
-                      child: const Text('Read More'),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

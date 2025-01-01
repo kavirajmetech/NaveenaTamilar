@@ -2,9 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kynnovate/Models/news_item.dart';
-import 'package:xml/xml.dart'; // Import xml package for parsing
-
-import 'news_details_screen.dart'; // Assuming you have a detail screen
+import 'package:xml/xml.dart';
+import 'news_details_screen.dart';
 
 class LatestNewsPage extends StatefulWidget {
   @override
@@ -21,7 +20,7 @@ class _LatestNewsPageState extends State<LatestNewsPage> {
   }
 
   Future<List<NewsItem>> _loadLatestNews() async {
-    final String url = "https://www.dinakaran.com/feed/";
+    final String url = "https://www.dinakaran.com/feed/"; // RSS URL
     return await fetchRssFeed(url);
   }
 
@@ -44,7 +43,6 @@ class _LatestNewsPageState extends State<LatestNewsPage> {
     List<NewsItem> newsItems = [];
 
     for (final element in items) {
-      // Use the NewsItem.fromXml method to create a NewsItem from each RSS <item>
       newsItems.add(NewsItem.fromXml(element));
     }
 
