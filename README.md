@@ -69,7 +69,7 @@ Follow these steps to set up and run Namadhu News on your local machine.
 ### Built APK
 The built APK file is available in the `release` folder located at the root directory:
 ```
-/release/app-release.apk
+/release app version/namadhu flutter version 1.apk
 ```
 
 ## Future Enhancements
