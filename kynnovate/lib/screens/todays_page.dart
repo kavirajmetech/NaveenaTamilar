@@ -1,14 +1,430 @@
+// import 'dart:ffi';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/rendering.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:xml/xml.dart' as xml;
+// import 'category_page.dart';
+// import 'latest_news_page.dart';
+// import 'location_page.dart';
+// import 'news_details_screen.dart';
+// import 'package:kynnovate/Models/news_item.dart';
+// import 'dart:async';
+
+// class TodaysPage extends StatefulWidget {
+//   @override
+//   _TodaysPageState createState() => _TodaysPageState();
+// }
+
+// class _TodaysPageState extends State<TodaysPage> {
+//   late Future<List<NewsItem>> futureNewsItems;
+//   late Future<List<NewsItem>> latestItems;
+//   bool isLoading = true;
+//   String errorMessage = '';
+
+//   // Fetch data method
+//   Future<List<NewsItem>> fetchRssFeed(String url) async {
+//     try {
+//       final response = await http.get(Uri.parse(url));
+//       if (response.statusCode == 200) {
+//         final document = xml.XmlDocument.parse(response.body);
+//         final items = document.findAllElements('item');
+//         return items.map((element) => NewsItem.fromXml(element)).toList();
+//       } else {
+//         print(
+//             'Failed to load RSS feed from $url (Status Code: ${response.statusCode})');
+//         return [];
+//       }
+//     } catch (e) {
+//       print('Error fetching RSS feed from $url: $e');
+//       return [];
+//     }
+//   }
+
+//   // Fetch multiple RSS feeds
+//   Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
+//     List<NewsItem> allNewsItems = [];
+//     List<String> failedUrls = [];
+
+//     for (String url in urls) {
+//       try {
+//         final newsItems = await fetchRssFeed(url);
+//         if (newsItems.isNotEmpty) {
+//           allNewsItems.addAll(newsItems);
+//         } else {
+//           failedUrls.add(url);
+//         }
+//       } catch (e) {
+//         failedUrls.add(url);
+//         print('Error fetching from $url: $e');
+//       }
+//     }
+
+//     if (allNewsItems.isEmpty && failedUrls.isNotEmpty) {
+//       throw Exception('Failed to fetch news from any source');
+//     }
+
+//     return allNewsItems;
+//   }
+
+//   // Refresh method to reload data
+//   Future<void> _refreshNews() async {
+//     setState(() {
+//       isLoading = true;
+//       errorMessage = '';
+//     });
+
+//     try {
+//       futureNewsItems = fetchMultipleRssFeeds([
+//         'https://www.dinakaran.com/feed/',
+//         'https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms',
+//         'https://www.thanthitv.com/feed',
+//         'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
+//         'https://www.indiatoday.in/rss/1206514',
+//         'https://feeds.bbci.co.uk/news/world/rss.xml',
+//         'https://beta.dinamani.com/api/v1/collections/latest-news.rss',
+//         'https://feeds.nbcnews.com/nbcnews/public/news',
+//       ]);
+//     } catch (e) {
+//       setState(() {
+//         errorMessage = 'Failed to refresh news. Please try again later.';
+//       });
+//     } finally {
+//       setState(() {
+//         isLoading = false;
+//       });
+//     }
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _refreshNews();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: errorMessage.isNotEmpty
+//           ? _buildErrorWidget()
+//           : RefreshIndicator(
+//               onRefresh: _refreshNews,
+//               child: ListView(
+//                 children: [
+//                   _buildSectionHeader('Today\'s News'),
+//                   _buildAllNews(),
+//                 ],
+//               ),
+//             ),
+//       bottomNavigationBar: BottomNavigationBar(
+//         items: const [
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.home),
+//             label: 'Home',
+//             backgroundColor: Colors.blueGrey,
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.search),
+//             label: 'Search',
+//             backgroundColor: Colors.blueGrey,
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.favorite),
+//             label: 'Favorites',
+//             backgroundColor: Colors.blueGrey,
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.person),
+//             label: 'Profile',
+//             backgroundColor: Colors.blueGrey,
+//           ),
+//         ],
+//         selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+//         unselectedItemColor: const Color.fromARGB(255, 91, 91, 91),
+//         showSelectedLabels: true,
+//         showUnselectedLabels: true,
+//         type: BottomNavigationBarType.fixed,
+//       ),
+//     );
+//   }
+
+//   // Error widget
+//   Widget _buildErrorWidget() {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           const Icon(Icons.error_outline, size: 48, color: Colors.red),
+//           const SizedBox(height: 16),
+//           Text(
+//             errorMessage,
+//             textAlign: TextAlign.center,
+//             style: const TextStyle(fontSize: 16),
+//           ),
+//           const SizedBox(height: 16),
+//           ElevatedButton(
+//             onPressed: _refreshNews,
+//             child: const Text('Try Again'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+// Widget _buildNewsItem(NewsItem item) {
+//   double boxWidth = 350; // Adjust this to change the width of the box
+
+//   return GestureDetector(
+//     onTap: () {
+//       // Navigate to NewsDetailScreen and pass the NewsItem
+//       Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => NewsDetailScreen(newsItem: item),
+//         ),
+//       );
+//     },
+//     child: Card(
+//       margin: EdgeInsets.all(8.0),
+//       child: Stack(
+//         children: [
+//           // Image with adjustable width and BoxFit.cover
+//           Image.network(
+//             item.imageUrl,
+//             width: boxWidth,  // Adjusted width
+//             height: 250, // Fixed height
+//             fit: BoxFit.cover,  // Ensure the image covers the container
+//             errorBuilder: (context, error, stackTrace) {
+//               return Container(
+//                 color: Colors.grey[300], // Placeholder in case of error
+//                 height: 250,
+//                 width: boxWidth,
+//                 child: const Icon(Icons.image_not_supported),
+//               );
+//             },
+//             loadingBuilder: (context, child, loadingProgress) {
+//               if (loadingProgress == null) return child;
+//               return Container(
+//                 color: Colors.grey[200], // Placeholder while loading
+//                 height: 250,
+//                 width: boxWidth,
+//                 child: const Center(child: CircularProgressIndicator()),
+//               );
+//             },
+//           ),
+//           // Text overlay with gradient background at the bottom
+//           Positioned(
+//             bottom: 0,
+//             left: 0,
+//             right: 0,
+//             child: Container(
+//               padding: EdgeInsets.all(8.0),
+//               width: boxWidth,  // Ensure overlay matches width of the image
+//               decoration: BoxDecoration(
+//                 gradient: LinearGradient(
+//                   begin: Alignment.topCenter,
+//                   end: Alignment.bottomCenter,
+//                   colors: [
+//                     Colors.transparent, // Transparent at the top
+//                     Colors.grey.withOpacity(0.7), // Greyish at the bottom
+//                   ],
+//                 ),
+//               ),
+//               child: Text(
+//                 item.title.length > 50
+//                     ? "${item.title.substring(0, 50)}..."  // Truncate text after 2 lines
+//                     : item.title,
+//                 style: TextStyle(
+//                   color: Colors.white,
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 16.0,
+//                   overflow: TextOverflow.ellipsis,
+//                 ),
+//                 maxLines: 2,  // Limit the text to 2 lines
+//                 softWrap: true,  // Ensure it wraps to the next line if necessary
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     ),
+//   );
+// }
+
+//   // Build all news widget
+//   Widget _buildAllNews() {
+//     return FutureBuilder<List<NewsItem>>(
+//       future: futureNewsItems,
+//       builder: (context, snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return const Center(
+//             child: Padding(
+//               padding: EdgeInsets.all(16.0),
+//               child: CircularProgressIndicator(),
+//             ),
+//           );
+//         } else if (snapshot.hasError) {
+//           return _buildSectionError('Today\'s News');
+//         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+//           return _buildEmptySection('Today\'s News');
+//         }
+//         return _buildNewsList(snapshot.data!);
+//       },
+//     );
+//   }
+
+//   Widget _buildSectionError(String section) {
+//     return Container(
+//       padding: const EdgeInsets.all(16),
+//       child: Column(
+//         children: [
+//           const Icon(Icons.error_outline, color: Colors.orange),
+//           const SizedBox(height: 8),
+//           Text(
+//             'Unable to load $section',
+//             style: const TextStyle(color: Colors.red),
+//           ),
+//           TextButton(
+//             onPressed: _refreshNews,
+//             child: const Text('Retry'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildEmptySection(String section) {
+//     return Container(
+//       padding: const EdgeInsets.all(16),
+//       child: Column(
+//         children: [
+//           const Icon(Icons.inbox, color: Colors.grey),
+//           const SizedBox(height: 8),
+//           Text('No $section available'),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildSectionHeader(String title) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           Text(
+//             title,
+//             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildHorizontalList(List<NewsItem> newsItems) {
+//     return SizedBox(
+//       height: 150,
+//       child: ListView.builder(
+//         scrollDirection: Axis.horizontal,
+//         itemCount: newsItems.length,
+//         itemBuilder: (context, index) {
+//           final newsItem = newsItems[index];
+//           return Container(
+//             width: 200,
+//             margin: const EdgeInsets.only(left: 16),
+//             child: Card(
+//               elevation: 5,
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   _buildNewsImage(newsItem.imageUrl, 100.0),
+//                   Padding(
+//                     padding: const EdgeInsets.all(8.0),
+//                     child: Text(
+//                       newsItem.title,
+//                       maxLines: 2,
+//                       overflow: TextOverflow.ellipsis,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildNewsImage(String imageUrl, double height) {
+//     return imageUrl.isNotEmpty
+//         ? Image.network(
+//             imageUrl,
+//             width: double.infinity,
+//             height: height,
+//             fit: BoxFit.cover,
+//             errorBuilder: (context, error, stackTrace) {
+//               return Container(
+//                 height: height,
+//                 color: Colors.grey[300],
+//                 child: const Icon(Icons.image_not_supported),
+//               );
+//             },
+//             loadingBuilder: (context, child, loadingProgress) {
+//               if (loadingProgress == null) return child;
+//               return Container(
+//                 height: height,
+//                 color: Colors.grey[200],
+//                 child: const Center(child: CircularProgressIndicator()),
+//               );
+//             },
+//           )
+//         : Container(
+//             height: height,
+//             color: Colors.grey[300],
+//             child: const Icon(Icons.image_not_supported),
+//           );
+//   }
+
+//   Widget _buildNewsList(List<NewsItem> newsItems) {
+//     return ListView.builder(
+//       shrinkWrap: true,
+//       physics: const NeverScrollableScrollPhysics(),
+//       itemCount: newsItems.length,
+//       itemBuilder: (context, index) {
+//         final newsItem = newsItems[index];
+//         return Card(
+//           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+//           child: ListTile(
+//             leading: SizedBox(
+//               width: 100,
+//               child: _buildNewsImage(newsItem.imageUrl, 60.0),
+//             ),
+//             title: Text(
+//               newsItem.title,
+//               maxLines: 2,
+//               overflow: TextOverflow.ellipsis,
+//             ),
+//             onTap: () {
+//               // Handle news item tap
+//             },
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
+
 import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
+import 'package:kynnovate/Models/news_item.dart';
 import 'package:xml/xml.dart' as xml;
 import 'category_page.dart';
 import 'latest_news_page.dart';
 import 'location_page.dart';
 import 'news_details_screen.dart';
-import 'package:kynnovate/Models/news_item.dart';
-import 'dart:async';  
+// import 'news_item.dart';
+import 'dart:async';
 
 class TodaysPage extends StatefulWidget {
   @override
@@ -75,13 +491,21 @@ class _TodaysPageState extends State<TodaysPage> {
 
     try {
       futureNewsItems = fetchMultipleRssFeeds([
+        'https://feeds.nbcnews.com/nbcnews/public/news',
+        'https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml',
+        'https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml',
+        'https://tamil.oneindia.com/rss/feeds/tamil-news-fb.xml',
+        'https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml',
+        'https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml',
+        'https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml',
         'https://www.dinakaran.com/feed/',
-        'https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms',
+        'https://timesofindia.indiatimes.com/rss.cms',
         'https://www.thanthitv.com/feed',
         'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
-        'https://www.indiatoday.in/rss/1206514',
+        'https://www.indiatoday.in/rss',
         'https://feeds.bbci.co.uk/news/world/rss.xml',
-        'https://beta.dinamani.com/api/v1/collections/latest-news.rss',
+        'https://www.hindutamil.in/rss',
+        'https://www.dinamani.com/rss',
         'https://feeds.nbcnews.com/nbcnews/public/news',
       ]);
     } catch (e) {
@@ -95,14 +519,11 @@ class _TodaysPageState extends State<TodaysPage> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
     _refreshNews();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -118,35 +539,6 @@ class _TodaysPageState extends State<TodaysPage> {
                 ],
               ),
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-            backgroundColor: Colors.blueGrey,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-            backgroundColor: Colors.blueGrey,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-            backgroundColor: Colors.blueGrey,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-            backgroundColor: Colors.blueGrey,
-          ),
-        ],
-        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-        unselectedItemColor: const Color.fromARGB(255, 91, 91, 91),
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-      ),
     );
   }
 
@@ -173,85 +565,86 @@ class _TodaysPageState extends State<TodaysPage> {
     );
   }
 
-Widget _buildNewsItem(NewsItem item) {
-  double boxWidth = 350; // Adjust this to change the width of the box
+  Widget _buildNewsItem(NewsItem item) {
+    double boxWidth = 350; // Adjust this to change the width of the box
 
-  return GestureDetector(
-    onTap: () {
-      // Navigate to NewsDetailScreen and pass the NewsItem
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => NewsDetailScreen(newsItem: item),
-        ),
-      );
-    },
-    child: Card(
-      margin: EdgeInsets.all(8.0),
-      child: Stack(
-        children: [
-          // Image with adjustable width and BoxFit.cover
-          Image.network(
-            item.imageUrl,
-            width: boxWidth,  // Adjusted width
-            height: 250, // Fixed height
-            fit: BoxFit.cover,  // Ensure the image covers the container
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                color: Colors.grey[300], // Placeholder in case of error
-                height: 250,
-                width: boxWidth,
-                child: const Icon(Icons.image_not_supported),
-              );
-            },
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Container(
-                color: Colors.grey[200], // Placeholder while loading
-                height: 250,
-                width: boxWidth,
-                child: const Center(child: CircularProgressIndicator()),
-              );
-            },
+    return GestureDetector(
+      onTap: () {
+        // Navigate to NewsDetailScreen and pass the NewsItem
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewsDetailScreen(newsItem: item),
           ),
-          // Text overlay with gradient background at the bottom
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: EdgeInsets.all(8.0),
-              width: boxWidth,  // Ensure overlay matches width of the image
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent, // Transparent at the top
-                    Colors.grey.withOpacity(0.7), // Greyish at the bottom
-                  ],
+        );
+      },
+      child: Card(
+        margin: EdgeInsets.all(8.0),
+        child: Stack(
+          children: [
+            // Image with adjustable width and BoxFit.cover
+            Image.network(
+              item.imageUrl,
+              width: boxWidth, // Adjusted width
+              height: 250, // Fixed height
+              fit: BoxFit.cover, // Ensure the image covers the container
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: Colors.grey[300], // Placeholder in case of error
+                  height: 250,
+                  width: boxWidth,
+                  child: const Icon(Icons.image_not_supported),
+                );
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  color: Colors.grey[200], // Placeholder while loading
+                  height: 250,
+                  width: boxWidth,
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              },
+            ),
+            // Text overlay with gradient background at the bottom
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                width: boxWidth, // Ensure overlay matches width of the image
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent, // Transparent at the top
+                      Colors.grey.withOpacity(0.7), // Greyish at the bottom
+                    ],
+                  ),
                 ),
-              ),
-              child: Text(
-                item.title.length > 50
-                    ? "${item.title.substring(0, 50)}..."  // Truncate text after 2 lines
-                    : item.title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
-                  overflow: TextOverflow.ellipsis,
+                child: Text(
+                  item.title.length > 50
+                      ? "${item.title.substring(0, 50)}..." // Truncate text after 2 lines
+                      : item.title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  maxLines: 2, // Limit the text to 2 lines
+                  softWrap:
+                      true, // Ensure it wraps to the next line if necessary
                 ),
-                maxLines: 2,  // Limit the text to 2 lines
-                softWrap: true,  // Ensure it wraps to the next line if necessary
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   // Build all news widget
   Widget _buildAllNews() {
@@ -387,10 +780,6 @@ Widget _buildNewsItem(NewsItem item) {
           );
   }
 
- 
-
-
-
   Widget _buildNewsList(List<NewsItem> newsItems) {
     return ListView.builder(
       shrinkWrap: true,
@@ -410,8 +799,18 @@ Widget _buildNewsItem(NewsItem item) {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
+            subtitle: Text(
+              newsItem.date,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () {
-              // Handle news item tap
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NewsDetailScreen(newsItem: newsItem),
+                ),
+              );
             },
           ),
         );

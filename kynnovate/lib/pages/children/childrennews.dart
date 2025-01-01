@@ -99,14 +99,23 @@ class _KidsNewsPageState extends State<KidsNewsPage> {
           final components = textContent.split('":"');
           if (components.length >= 7) {
             setState(() {
-              _question = components[0].replaceAll('"', '').trim();
+              // _question = components[0].replaceAll('"', '').trim();
+              // _options = [
+              //   components[1].replaceAll('"', '').trim(),
+              //   components[2].replaceAll('"', '').trim(),
+              //   components[3].replaceAll('"', '').trim(),
+              //   components[4].replaceAll('"', '').trim()
+              // ];
+              // _correctAnswer = components[5].replaceAll('"', '').trim();
+              _question =
+                  'What have scientists recently discovered about the moon?';
               _options = [
-                components[1].replaceAll('"', '').trim(),
-                components[2].replaceAll('"', '').trim(),
-                components[3].replaceAll('"', '').trim(),
-                components[4].replaceAll('"', '').trim()
+                'It has trees in its craters.',
+                'It has ice in its craters.',
+                'It has water on its surface.',
+                'It has gold deposits.'
               ];
-              _correctAnswer = components[5].replaceAll('"', '').trim();
+              _correctAnswer = 'B';
               _showQuestion = true;
             });
           } else {

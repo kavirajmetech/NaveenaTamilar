@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     NewsListScreen(), // Home
     KidsNewsPage(), // Replace with your Search Page
-    Center(child: Text("Favorites Page")),
+    // Center(child: Text("Favorites Page")),
     SlideshowScreen(), // Replace with your Favorites Page
     MemePage(), // Profile
   ];
@@ -151,30 +151,30 @@ class _HomePageState extends State<HomePage> {
       ),
       body: _pages[_selectedIndex], // Display the selected page
       bottomNavigationBar: BottomNavigationBar(
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: home[globalLanguageOption] ?? 'Home',
             backgroundColor: Colors.blueGrey,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.child_care),
-            label: 'Children',
+            label: children[globalLanguageOption] ?? 'Children',
             backgroundColor: Colors.blueGrey,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-            backgroundColor: Colors.blueGrey,
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.favorite),
+          //   label: 'Favorites',
+          //   backgroundColor: Colors.blueGrey,
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.video_call),
-            label: 'Shorts',
+            label: shorts[globalLanguageOption] ?? 'Shorts',
             backgroundColor: Colors.blueGrey,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.emoji_emotions),
-            label: 'Memes',
+            label: memes[globalLanguageOption] ?? 'Memes',
             backgroundColor: Colors.blueGrey,
           ),
         ],
