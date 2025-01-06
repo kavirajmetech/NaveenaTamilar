@@ -294,3 +294,4 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     );
   }
 }
+
