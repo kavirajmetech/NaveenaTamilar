@@ -102,7 +102,9 @@ class _CollectDetailsState extends State<CollectDetails> {
                     'likednewschannels': [],
                     'profileImageUrl': "",
                     'comments': [],
-                    'subscriptions': []
+                    'subscriptions': [],
+                    'Events': [],
+                    'EventsRegistered': []
                   });
 
                   Navigator.pushReplacement(

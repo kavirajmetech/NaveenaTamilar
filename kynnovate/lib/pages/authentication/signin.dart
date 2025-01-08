@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:kynnovate/pages/authentication/form.dart';
 import 'signup.dart';
 import 'splashscreen.dart';
 
@@ -13,31 +15,95 @@ class _SignInPageState extends State<SignInPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  Future<User?> _signInWithGoogle() async {
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  String _selectedState = "Not Selected";
+  String _selectedDistrict = "Not Selected";
+  Future<void> _signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-      if (googleUser == null) {
-        return null;
-      }
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return; // User canceled sign-in
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential =
+      final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
 
-      print("Signed in as: ${userCredential.user?.displayName}");
-      return userCredential.user;
+      if (user != null) {
+        // Check if user exists in Firestore
+        final userDoc =
+            FirebaseFirestore.instance.collection('User').doc(user.uid);
+        final userExists = await userDoc.get();
+
+        if (userExists.exists) {
+          // User already exists, redirect to SplashScreen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SplashScreen()),
+          );
+        } else {
+          // Save the new user to Firestore and redirect to CollectDetails
+          await _saveUserToFirestore(
+              user.uid,
+              user.displayName ?? "Google User",
+              user.email ?? "",
+              "Google Sign-In");
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => CollectDetails()),
+          );
+        }
+      }
     } catch (e) {
-      print("Error signing in with Google: $e");
-      return null;
+      _showErrorDialog("Error: ${e.toString()}");
     }
+  }
+
+  Future<void> _saveUserToFirestore(
+      String uid, String name, String email, String authMethod) async {
+    final userDoc = FirebaseFirestore.instance.collection('User').doc(uid);
+    final userExists = await userDoc.get();
+    if (!userExists.exists) {
+      await userDoc.set({
+        'name': name,
+        'email': email,
+        'authMethod': authMethod,
+        'state': _selectedState,
+        'district': _selectedDistrict,
+        'likedcontent': [],
+        'likedauthors': [],
+        'likednewschannels': [],
+        'profileImageUrl': "",
+        'comments': [],
+        'subscriptions': [],
+        'Events': [],
+        'EventsRegistered': [],
+      });
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          content: Text(
+            message,
+            style: const TextStyle(color: Colors.red),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -64,7 +130,6 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          // Page Content
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -102,7 +167,6 @@ class _SignInPageState extends State<SignInPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 40),
-                  // Email Field
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.9),
@@ -119,7 +183,6 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Password Field
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.9),
@@ -140,9 +203,7 @@ class _SignInPageState extends State<SignInPage> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {
-                        // Add your forgot password functionality here
-                      },
+                      onPressed: () {},
                       child: const Text(
                         'Forgot Password?',
                         style: TextStyle(color: Colors.white70),
@@ -154,7 +215,6 @@ class _SignInPageState extends State<SignInPage> {
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        // Sign in the user
                         UserCredential userCredential =
                             await _auth.signInWithEmailAndPassword(
                           email: _emailController.text,
@@ -210,14 +270,7 @@ class _SignInPageState extends State<SignInPage> {
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () async {
-                      final user = await _signInWithGoogle();
-                      if (user != null) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SplashScreen()),
-                        );
-                      }
+                      await _signInWithGoogle();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,

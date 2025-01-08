@@ -1,8 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:http/http.dart' as http;
+import 'package:kynnovate/Models/news_item.dart';
+import 'package:kynnovate/globals.dart';
+import 'package:kynnovate/landingpage.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:translator/translator.dart';
+import 'package:xml/xml.dart' as xml;
+
+import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:translator/translator.dart';
+import 'package:kynnovate/Models/news_item.dart';
+import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:translator/translator.dart';
+import 'package:kynnovate/Models/news_item.dart';
 
 class KidsNewsPage extends StatefulWidget {
   @override
@@ -10,285 +28,225 @@ class KidsNewsPage extends StatefulWidget {
 }
 
 class _KidsNewsPageState extends State<KidsNewsPage> {
-  final String cartoonImage = 'assets/cartoon.png';
-  final List<Map<String, String>> newsItems = [
-    {
-      "title": "The Moon and Its Mysteries!",
-      "content":
-          "Scientists have discovered new secrets about the moon. It has ice in its craters!"
-    },
-    {
-      "title": "The Ocean Depths!",
-      "content":
-          "Scientists are exploring the deepest parts of the ocean. They found new species living there!"
-    }
-  ];
-
-  int _currentNewsIndex = 0;
-  bool _showQuestion = false;
-  bool _showRewards = false;
-  double _timeLeft = 30.0;
-  late Timer _questionTimer;
-  late Timer _readAloudTimer;
-  String _question = '';
-  List<String> _options = [];
-  String _correctAnswer = '';
+  late List<Map<String, String>> newsItems = [];
   final FlutterTts _flutterTts = FlutterTts();
+  final translator = GoogleTranslator();
+  final List<String> images = [
+    'assets/ben10.png',
+    'assets/bheem.png',
+    'assets/chinchan.png',
+    'assets/cartoon.png',
+    'assets/ben10.png',
+    'assets/bheem.png',
+    'assets/chinchan.png',
+    'assets/cartoon.png',
+  ];
 
   @override
   void initState() {
+    print('languages' + globalLanguageOption);
     super.initState();
-    _startTimer();
+    _loadNewsItems();
   }
 
-  @override
-  void dispose() {
-    _questionTimer.cancel();
-    _flutterTts.stop();
-    super.dispose();
-  }
-
-  void _startTimer() {
-    _timeLeft = 5.0;
-    _questionTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (_timeLeft > 0) {
-        setState(() {
-          _timeLeft -= 1;
-        });
-      } else {
-        timer.cancel();
-        _fetchQuestionFromGemini();
-      }
-    });
-  }
-
-  Future<void> _fetchQuestionFromGemini() async {
-    final apiKey = 'AIzaSyBHbQhbhN55b1RR00vbUfgeoVoAZgAuj6s';
-    final url =
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey';
-
+  Future<void> _loadNewsItems() async {
     try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'contents': [
-            {
-              'parts': [
-                {
-                  'text':
-                      '${newsItems[_currentNewsIndex]['content']}, for this news, Return a question , options and the correct answer, please return in the form of "question text":"option a":"option b":"option c":"option d":"answer".'
-                }
-              ]
-            }
-          ]
-        }),
-      );
+      final urls = [
+        // "https://beta.dinamani.com/api/v1/collections/siruvarmani-weekly-supplements.rss",
+        "https://kidsactivitiesblog.com/category/kids-activities/feed/",
+        // "https://www.superhealthykids.com/feed/",
+        // "https://handsonaswegrow.com/feed/",
+        // "https://www.activityvillage.co.uk/rss.xml",
+        // "https://supersimple.com/feed/",
+        // "https://beta.dinamani.com/api/v1/collections/children-health-health.rss",
+      ];
 
+      final fetchedNews = await fetchMultipleRssFeeds(urls);
+      setState(() {
+        newsItems = fetchedNews
+            .map((item) => {
+                  "title": item.title,
+                  "content": item.description,
+                })
+            .toList();
+      });
+      print(newsItems);
+      print('loaded everything');
+    } catch (e) {
+      print('Error loading news items: $e');
+    }
+  }
+
+  Future<List<NewsItem>> fetchMultipleRssFeeds(List<String> urls) async {
+    List<NewsItem> allNewsItems = [];
+    for (String url in urls) {
+      final newsItems = await fetchRssFeed(url);
+      allNewsItems.addAll(newsItems);
+    }
+    return allNewsItems;
+  }
+
+  Future<List<NewsItem>> fetchRssFeed(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      final deco = utf8.decode(response.bodyBytes);
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        if (responseData['candidates'] != null &&
-            responseData['candidates'] is List &&
-            responseData['candidates'].isNotEmpty) {
-          final textContent = responseData['candidates'][0]['content']['parts']
-              [0]['text'] as String;
-
-          // Parse the response string
-          final components = textContent.split('":"');
-          if (components.length >= 7) {
-            setState(() {
-              // _question = components[0].replaceAll('"', '').trim();
-              // _options = [
-              //   components[1].replaceAll('"', '').trim(),
-              //   components[2].replaceAll('"', '').trim(),
-              //   components[3].replaceAll('"', '').trim(),
-              //   components[4].replaceAll('"', '').trim()
-              // ];
-              // _correctAnswer = components[5].replaceAll('"', '').trim();
-              _question =
-                  'What have scientists recently discovered about the moon?';
-              _options = [
-                'It has trees in its craters.',
-                'It has ice in its craters.',
-                'It has water on its surface.',
-                'It has gold deposits.'
-              ];
-              _correctAnswer = 'B';
-              _showQuestion = true;
-            });
-          } else {
-            print("Unexpected response format. Length: ${components.length}");
-          }
-        } else {
-          print("Invalid response structure: $responseData");
-        }
-      } else {
-        print('Error: ${response.statusCode} ${response.reasonPhrase}');
+        final document = xml.XmlDocument.parse(deco);
+        final items = document.findAllElements('item');
+        return items.map((element) => NewsItem.fromXml(element)).toList();
       }
     } catch (e) {
-      print("Error fetching question: $e");
+      print('Error fetching RSS feed from $url: $e');
     }
+    return [];
   }
 
   void _readAloud(String text) async {
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setPitch(1.0);
     await _flutterTts.speak(text);
-  }
-
-  void _displayRewards() {
-    setState(() {
-      _showRewards = true;
-    });
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        _showRewards = false;
-        _loadNextNewsOrReset();
-      });
-    });
-  }
-
-  void _checkAnswer(int selectedAnswer) {
-    int correctAnswer =
-        _correctAnswer.toUpperCase().codeUnitAt(0) - 'A'.codeUnitAt(0) + 1;
-    if (selectedAnswer == correctAnswer) {
-      _displayRewards();
-    } else {
-      print("Incorrect Answer: $selectedAnswer");
-    }
-  }
-
-  void _loadNextNewsOrReset() {
-    if (_currentNewsIndex < newsItems.length - 1) {
-      setState(() {
-        _currentNewsIndex++;
-        _showQuestion = false;
-        _timeLeft = 30.0;
-        _startTimer();
-      });
-    } else {
-      setState(() {
-        _currentNewsIndex = 0;
-        _showQuestion = false;
-        _timeLeft = 30.0;
-        _startTimer();
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Kids News"),
-        backgroundColor: Colors.purple,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Center(
-                child: Image.asset(
-                  cartoonImage,
-                  height: 150,
-                ),
-              ),
-              SizedBox(height: 20),
-              if (!_showQuestion)
-                Column(
-                  children: [
-                    CircularProgressIndicator(
-                      value: _timeLeft / 30,
-                      strokeWidth: 6,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      newsItems[_currentNewsIndex]['title']!,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      newsItems[_currentNewsIndex]['content']!,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black87,
-                      ),
-                      textAlign: TextAlign.justify,
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: () =>
-                          _readAloud(newsItems[_currentNewsIndex]['content']!),
-                      icon: Icon(Icons.record_voice_over),
-                      label: Text("Read Aloud"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.pink,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              if (_showQuestion) ...[
-                Divider(height: 30, color: Colors.grey),
-                Text(
-                  _question,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
+      body: newsItems.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: newsItems.length,
+              itemBuilder: (context, index) {
+                final news = newsItems[index];
+                final randomImage = images[Random().nextInt(images.length)];
+
+                return Card(
+                  margin: EdgeInsets.all(10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                ),
-                SizedBox(height: 10),
-                for (var entry in _options.asMap().entries)
-                  ElevatedButton(
-                    onPressed: () => _checkAnswer(entry.key),
-                    child: Text(entry.value),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-              ],
-              if (_showRewards)
-                Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: Colors.orange,
-                        size: 50,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Congrats! You got a reward!",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                  elevation: 5,
+                  child: SizedBox(
+                    height: 280,
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.asset(
+                            randomImage,
+                            height: 280, // Image height matches card height
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Icon(
-                        Icons.fireplace,
-                        color: Colors.red,
-                        size: 50,
-                      ),
-                    ],
+                        Container(
+                          height: 280,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.black.withOpacity(0.4),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 50,
+                                padding: EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: FutureBuilder<String>(
+                                  future: translator
+                                      .translate(news["title"]!,
+                                          to: globalLanguageOption)
+                                      .then((value) => value.toString()),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Text(
+                                        "Loading translation...",
+                                        style: TextStyle(color: Colors.white),
+                                      );
+                                    }
+                                    if (snapshot.hasError) {
+                                      return Text(
+                                        "Error translating...",
+                                        style: TextStyle(color: Colors.white),
+                                      );
+                                    }
+                                    return SingleChildScrollView(
+                                      child: Text(
+                                        snapshot.data ?? "",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Container(
+                                height: 150,
+                                padding: EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: FutureBuilder<String>(
+                                  future: translator
+                                      .translate(news["content"]!,
+                                          to: globalLanguageOption)
+                                      .then((value) => value.toString()),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Text(
+                                        "Loading translation...",
+                                        style: TextStyle(color: Colors.white),
+                                      );
+                                    }
+                                    if (snapshot.hasError) {
+                                      return Text(
+                                        "Error translating...",
+                                        style: TextStyle(color: Colors.white),
+                                      );
+                                    }
+                                    return SingleChildScrollView(
+                                      child: Text(
+                                        snapshot.data ?? "",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: ElevatedButton.icon(
+                                  onPressed: () => _readAloud(
+                                    "${news["title"]}. ${news["content"]}",
+                                  ),
+                                  icon: Icon(Icons.volume_up),
+                                  label: Text("Read Aloud"),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-            ],
-          ),
-        ),
-      ),
+                );
+              },
+            ),
     );
   }
 }

@@ -1,21 +1,30 @@
 {
   "categories": {
     "Entertainment": [
-      "https://www.vikatan.com/stories.rss?section-id=8956&time-period=last-24-hours"
+      "https://www.vikatan.com/stories.rss?section-id=8956&time-period=last-24-hours",
+      "https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms",
+      "https://timesofindia.indiatimes.com/rssfeedsvideo/3812908.cms",
+      "https://tamil.hindustantimes.com/rss/entertainment"
     ],
     "Cinema": [
-      "https://www.vikatan.com/api/v1/collections/kollywood-entertainment.rss?&time-period=last-24-hours"
+      "https://www.vikatan.com/api/v1/collections/kollywood-entertainment.rss?&time-period=last-24-hours",
+      "https://www.news18.com/commonfeeds/v1/eng/rss/movies.xml"
     ],
-    "News": {
-      "India": [
-        "https://www.vikatan.com/api/v1/collections/india-news.rss?&time-period=last-24-hours"
-      ],
-      "World": [
-        "https://www.vikatan.com/api/v1/collections/international.rss?&time-period=last-24-hours"
-      ]
-    },
+    "India": [
+      "https://www.vikatan.com/api/v1/collections/india-news.rss?&time-period=last-24-hours",
+      "https://www.indiatoday.in/rss/1206514"
+    ],
+    "World": [
+      "https://www.vikatan.com/api/v1/collections/international.rss?&time-period=last-24-hours",
+      "https://www.news18.com/commonfeeds/v1/eng/rss/world.xml",
+      "https://www.indiatoday.in/rss/1206577",
+      "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
+      "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms"
+    ],
     "Economics": [
-      "https://www.vikatan.com/stories.rss?section=business&time-period=last-24-hours"
+      "https://www.vikatan.com/stories.rss?section=business&time-period=last-24-hours",
+      "https://www.indiatoday.in/rss/1206513",
+      "https://timesofindia.indiatimes.com/rssfeedsvideo/3813458.cms"
     ],
     "General": [
       "https://tamil.news18.com/commonfeeds/v1/tam/rss/live-updates.xml",
@@ -23,28 +32,456 @@
       "https://timesofindia.indiatimes.com/rss.cms",
       "https://www.thanthitv.com/feed",
       "https://timesofindia.indiatimes.com/rssfeeds/1221656.cms",
-      "https://www.indiatoday.in/rss",
+      "https://www.indiatoday.in/rss/home",
       "https://feeds.bbci.co.uk/news/world/rss.xml",
       "https://www.hindutamil.in/rss",
       "https://www.dinamani.com/rss",
       "https://feeds.nbcnews.com/nbcnews/public/news"
     ],
     "Technology": [
-      "https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml"
+      "https://tamil.oneindia.com/rss/feeds/tamil-technology-fb.xml",
+      "https://www.news18.com/commonfeeds/v1/eng/rss/tech.xml",
+      "https://feeds.bbci.co.uk/tamil/rss.xml"
     ],
     "Weather": [
       "https://tamil.oneindia.com/rss/feeds/tamil-weather-fb.xml"
     ],
-    "Cricket": [
+    "Sports": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml",
+      "https://www.news18.com/commonfeeds/v1/eng/rss/sports.xml",
+      "https://www.news18.com/commonfeeds/v1/eng/rss/football.xml",
+      "https://www.indiatoday.in/rss/1206550",
+      "https://timesofindia.indiatimes.com/rssfeeds/4719148.cms",
+      "https://timesofindia.indiatimes.com/rssfeeds/54829575.cms",
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/sports.xml",
+      "https://tamil.hindustantimes.com/rss/sports"
+    ],
+    "Virudhunagar": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml"
+    ],
+    "Tamil Nadu": [
+      "https://tamil.hindustantimes.com/rss/tamilnadu"
+    ],
+    "Chennai": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml",
+      "https://timesofindia.indiatimes.com/rssfeeds/2950623.cms"
+    ],
+    "Politics": [
+      "https://www.news18.com/commonfeeds/v1/eng/rss/politics.xml"
+    ],
+    "Education": [
+      "https://timesofindia.indiatimes.com/rssfeeds/913168846.cms"
+    ],
+    "Examination": [
+      "https://upsctree.com/feed/",
+      "https://officersiasacademy.com/feed/",
+      "https://iascoachings.com/feed/"
+    ],
+    "Kids": [
+      "https://kidsactivitiesblog.com/category/kids-activities/feed/",
+      "https://www.superhealthykids.com/feed/",
+      "https://handsonaswegrow.com/feed/",
+      "https://www.activityvillage.co.uk/rss.xml",
+      "https://supersimple.com/feed/",
+      "https://beta.dinamani.com/api/v1/collections/children-health-health.rss",
+      "https://beta.dinamani.com/api/v1/collections/siruvarmani-weekly-supplements.rss",
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/parenting.xml"
+    ],
+    "Cuddalore": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/cuddalore-district.xml"
+    ],
+    "Erode": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/erode-district.xml"
+    ],
+    "Salem": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/salem.xml"
+    ],
+    "Kallakurichi": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/kallakurichi-district.xml"
+    ],
+    "Tiruvannamalai": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruvannamalai-district.xml"
+    ],
+    "Ariyalur District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/ariyalur-district.xml"
+    ],
+    "Breaking and Live Updates": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/live-updates.xml"
+    ],
+    "Chengalpattu District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/chengalpattu-district.xml"
+    ],
+    "Chennai District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml"
+    ],
+    "Coimbatore District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/coimbatore-district.xml"
+    ],
+    "Cuddalore District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/cuddalore-district.xml"
+    ],
+    "Dharmapuri District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/dharmapuri-district.xml"
+    ],
+    "Dindigul District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/dindigul-district.xml"
+    ],
+    "Elections": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/elections.xml"
+    ],
+    "Erode District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/erode-district.xml"
+    ],
+    "Kallakurichi District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/kallakurichi-district.xml"
+    ],
+    "Kanniyakumari District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/kanniyakumari-district.xml"
+    ],
+    "Karur District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/karur-district.xml"
+    ],
+    "krishnagiri District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/krishnagiri-district.xml"
+    ],
+    "live tv": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/live-tv.xml"
+    ],
+    "Madurai District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/madurai-district.xml"
+    ],
+    "Mayiladuthurai District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/mayiladuthurai-district.xml"
+    ],
+    "michaung cyclone": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/michaung-cyclone.xml"
+    ],
+    "Nagapattinam District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/nagapattinam-district.xml"
+    ],
+    "Namakkal District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/namakkal-district.xml"
+    ],
+    "Nilgiris District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/nilgiris-district.xml"
+    ],
+    "Perambalur District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/perambalur-district.xml"
+    ],
+    "Pudukkottai District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/pudukkottai-district.xml"
+    ],
+    "Ramanathapuram District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/ramanathapuram-district.xml"
+    ],
+    "Ranipet District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/ranipet-district.xml"
+    ],
+    "Salem District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/salem-district.xml"
+    ],
+    "Sivagangai District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/sivagangai-district.xml"
+    ],
+    "Tenkasi District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tenkasi-district.xml"
+    ],
+    "Thanjavur District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/thanjavur-district.xml"
+    ],
+    "Theni District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/theni-district.xml"
+    ],
+    "Thoothukudi District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/thoothukudi-district.xml"
+    ],
+    "Tiruchirappalli District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruchirappalli-district.xml"
+    ],
+    "Tirunelveli District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tirunelveli-district.xml"
+    ],
+    "Tirupattur District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tirupattur-district.xml"
+    ],
+    "Tiruppur District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruppur-district.xml"
+    ],
+    "Tiruvallur District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruvallur-district.xml"
+    ],
+    "Tiruvannamalai District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruvannamalai-district.xml"
+    ],
+    "Tiruvarur District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruvarur-district.xml"
+    ],
+    "Vellore District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/vellore-district.xml"
+    ],
+    "Viluppuram District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/viluppuram-district.xml"
+    ],
+    "Virudhunagar District": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml"
+    ],
+    "அயோத்தி ராமர் கோயில்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/%e0%ae%85%e0%ae%af%e0%af%8b%e0%ae%a4%e0%af%8d%e0%ae%a4%e0%ae%bf-%e0%ae%b0%e0%ae%be%e0%ae%ae%e0%ae%b0%e0%af%8d-%e0%ae%95%e0%af%8b%e0%ae%af%e0%ae%bf%e0%ae%b2%e0%af%8d.xml"
+    ],
+    "அரியலூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/ariyalur.xml"
+    ],
+    "ஆட்டோமொபைல்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/automobile.xml"
+    ],
+    "ஆன்மிகம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/spiritual.xml"
+    ],
+    "இந்தியா": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/national.xml"
+    ],
+    "இந்தியா - சீனா": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/india-china.xml"
+    ],
+    "ஈரோடு": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/erode.xml"
+    ],
+    "உலகம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/international.xml"
+    ],
+    "உள்ளூர் செய்திகள்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/local-news.xml"
+    ],
+    "கடலூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/cuddalore.xml"
+    ],
+    "கரூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/karur.xml"
+    ],
+    "கல்வி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/education.xml"
+    ],
+    "கள்ளக்குறிச்சி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/kallakurichi.xml"
+    ],
+    "கன்னியாகுமரி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/kanniyakumari.xml"
+    ],
+    "காஞ்சிபுரம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/kancheepuram.xml"
+    ],
+    "கிருஷ்ணகிரி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/krishnagiri.xml"
+    ],
+    "கொரோனா": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/coronavirus-latest-news.xml"
+    ],
+    "கோயம்புத்தூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/coimbatore.xml"
+    ],
+    "சிவகங்கை": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/sivagangai.xml"
+    ],
+    "சிறப்புக் கட்டுரைகள்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/special-articles.xml"
+    ],
+    "செங்கல்பட்டு": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/chengalpattu.xml"
+    ],
+    "செய்தி விளக்கம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/explainers.xml"
+    ],
+    "சென்னை": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai.xml"
+    ],
+    "சேலம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/salem.xml"
+    ],
+    "ட்ரெண்டிங்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/trend.xml"
+    ],
+    "தஞ்சாவூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/thanjavur.xml"
+    ],
+    "தமிழ்நாடு": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tamil-nadu.xml"
+    ],
+    "தர்மபுரி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/dharmapuri.xml"
+    ],
+    "திண்டுக்கல்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/dindigul.xml"
+    ],
+    "திருச்சி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/trichy.xml"
+    ],
+    "திருநெல்வேலி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tirunelveli.xml"
+    ],
+    "திருப்பத்தூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tirupattur.xml"
+    ],
+    "திருப்பூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruppur.xml"
+    ],
+    "திருவண்ணாமலை": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruvannamalai.xml"
+    ],
+    "திருவள்ளூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruvallur.xml"
+    ],
+    "திருவாரூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tiruvarur.xml"
+    ],
+    "தூத்துக்குடி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/thoothukudi.xml"
+    ],
+    "தென்காசி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/tenkasi.xml"
+    ],
+    "தேனி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/theni.xml"
+    ],
+    "தொழில்நுட்பம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/technology.xml"
+    ],
+    "நாகப்பட்டினம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/nagapattinam.xml"
+    ],
+    "நாமக்கல்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/namakkal.xml"
+    ],
+    "நீலகிரி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/nilgiris.xml"
+    ],
+    "புதுக்கோட்டை": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/pudukkottai.xml"
+    ],
+    "புதுச்சேரி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/puducherry.xml"
+    ],
+    "பெரம்பலூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/perambalur.xml"
+    ],
+    "பொழுதுபோக்கு": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/entertainment.xml"
+    ],
+    "மகளிர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/women.xml"
+    ],
+    "மதுரை": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/madurai.xml"
+    ],
+    "மயிலாடுதுறை": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/mayiladuthurai.xml"
+    ],
+    "மீம்ஸ்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/memes.xml"
+    ],
+    "ராணிப்பேட்டை": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/ranipet.xml"
+    ],
+    "ராமநாதபுரம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/ramanathapuram.xml"
+    ],
+    "லைஃப்ஸ்டைல்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle.xml"
+    ],
+    "வணிகம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/business.xml"
+    ],
+    "விருதுநகர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar.xml"
+    ],
+    "விழுப்புரம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/viluppuram.xml"
+    ],
+    "விளையாட்டு": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/sports.xml"
+    ],
+    "வேலூர்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/vellore.xml"
+    ],
+    "வேலைவாய்ப்பு": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/employment.xml"
+    ],
+    "Career Guidance": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/employment/career-guidance.xml"
+    ],
+    "Entrepreneurship": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/employment/entrepreneurship.xml"
+    ],
+    "Government Jobs": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/employment/government-jobs.xml"
+    ],
+    "Home and Interior": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/home-interior.xml"
+    ],
+    "IPl": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/ipl.xml"
+    ],
+    "Parenting": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/parenting.xml"
+    ],
+    "Private Jobs": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/employment/private-jobs.xml"
+    ],
+    "ஆண்டு ராசிபலன்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/spiritual/yearly-horoscope.xml"
+    ],
+    "உடல்நலம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/health.xml"
+    ],
+    "உணவு": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/food.xml"
+    ],
+    "உறவுமுறை": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/relationship.xml"
+    ],
+    "ஃபேஷன்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/fashion.xml"
+    ],
+    "கிரிக்கெட்": [
       "https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/cricket.xml"
     ],
-    "Regional": {
-      "Virudhunagar": [
-        "https://tamil.news18.com/commonfeeds/v1/tam/rss/virudhunagar-district.xml"
-      ],
-      "Chennai": [
-        "https://tamil.news18.com/commonfeeds/v1/tam/rss/chennai-district.xml"
-      ]
-    }
+    "கோவில்கள்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/spiritual/temples.xml"
+    ],
+    "சினிமா": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/entertainment/cinema.xml"
+    ],
+    "சின்னத்திரை": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/entertainment/television.xml"
+    ],
+    "திரை விமர்சனம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/entertainment/movie-reviews.xml"
+    ],
+    "தினசரி ராசிபலன்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/spiritual/daily-horoscope.xml"
+    ],
+    "நிகழ்ச்சிகள்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/shows-lifestyle.xml"
+    ],
+    "பயணம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/travel.xml"
+    ],
+    "பியூட்டி": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/lifestyle/beauty.xml"
+    ],
+    "மற்ற விளையாட்டுகள்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/sports/other-sports.xml"
+    ],
+    "மாத ராசிபலன்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/spiritual/monthly-horoscope.xml"
+    ],
+    "ராசிபலன்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/spiritual/horoscope.xml"
+    ],
+    "வார ராசிபலன்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/spiritual/weekly-horoscope.xml"
+    ],
+    "விவசாயம்": [
+      "https://tamil.news18.com/commonfeeds/v1/tam/rss/business/agriculture.xml"
+    ]
   }
 }

@@ -5,7 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import '../models/news_item.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
-import 'package:kynnovate/landingpage.dart';
+import 'package:kynnovate/landingpage.dart'; // Import the HomeScreen from landingpage.dart
 
 class SlideshowScreen extends StatefulWidget {
   @override
@@ -22,7 +22,6 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   int articlesPerBatch = 10;
   int totalArticlesFetched = 0;
   int currentBatchStartIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -60,7 +59,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       setState(() {
         articles = fetchedArticles;
         isLoading = false;
-        currentBatchStartIndex = articles.length;
+        currentBatchStartIndex = articles.length; // Set the batch start index
       });
 
       print("Initial articles fetched: ${articles.length}");
@@ -89,7 +88,8 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       setState(() {
         articles.addAll(fetchedArticles);
         isLoading = false;
-        currentBatchStartIndex = articles.length;
+        currentBatchStartIndex =
+            articles.length; // Update the batch start index
       });
 
       print("More articles fetched: ${fetchedArticles.length}");
@@ -146,8 +146,9 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     });
   }
 
-  int currentTheme = 1;
+  int currentTheme = 1; // 1 for Light, 0 for Dark
 
+  // Method to toggle theme
   void toggleTheme(int controll) {
     if (controll == 1) {
       setState(() {
@@ -163,21 +164,21 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('News Shorts'),
-        leading: IconButton(
-          icon: Icon(Icons.home),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => HomePage(
-                        toggleTheme: toggleTheme,
-                      )),
-            );
-          },
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: Text('News Shorts'),
+      //   leading: IconButton(
+      //     icon: Icon(Icons.home),
+      //     onPressed: () {
+      //       Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //             builder: (context) => HomePage(
+      //                   toggleTheme: toggleTheme,
+      //                 )),
+      //       );
+      //     },
+      //   ),
+      // ),
       body: isLoading && articles.isEmpty
           ? Center(child: CircularProgressIndicator())
           : PageView.builder(
@@ -192,6 +193,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                   speak(articles[index].description);
                 }
 
+                // Fetch more articles when user swipes past the 5th slide
                 if (index == currentBatchStartIndex - 5 &&
                     !isLoading &&
                     totalArticlesFetched < articles.length + articlesPerBatch) {
@@ -294,4 +296,3 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     );
   }
 }
-

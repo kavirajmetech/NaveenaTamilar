@@ -3,23 +3,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:kynnovate/Models/news_item.dart';
+import 'package:kynnovate/landingpage.dart';
 import 'package:xml/xml.dart' as xml;
-import 'category_page.dart';
-import 'latest_news_page.dart';
-import 'location_page.dart';
 import 'news_details_screen.dart';
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'news_list_screen.dart';
 
-class TodaysPage extends StatefulWidget {
+class ChannelPage extends StatefulWidget {
+  final String channel;
+
+  ChannelPage({required this.channel});
+
   @override
-  _TodaysPageState createState() => _TodaysPageState();
+  _ChannelPageState createState() => _ChannelPageState();
 }
 
-class _TodaysPageState extends State<TodaysPage> {
+class _ChannelPageState extends State<ChannelPage> {
+  final channelList = {
+    'Vikatan': [
+      "https://www.vikatan.com/api/v1/collections/kollywood-entertainment.rss?&time-period=last-24-hours"
+    ],
+    'Hindu Tamil': ['https://feeds.feedburner.com/Hindu_Tamil_tamilnadu'],
+    'BBC': ['https://feeds.bbci.co.uk/news/world/rss.xml'],
+    'NBC': ['https://feeds.nbcnews.com/nbcnews/public/news'],
+    'Dhinakaran': ['https://www.dinakaran.com/feed/'],
+    'Times Of India': ['https://timesofindia.indiatimes.com/rss.cms']
+  };
+
   late Future<List<NewsItem>> futureNewsItems;
-  late Future<List<NewsItem>> latestItems;
+  late Timer _timer;
   bool isLoading = true;
   String errorMessage = '';
+  late ScrollController
+      _scrollController; // Scroll controller for auto-scrolling
+
+  Future<List<String>> fetchWords(String username) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('tempUser')
+          .where('name', isEqualTo: username)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final docData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+        return List<String>.from(docData['words'] ?? []);
+      }
+    } catch (e) {
+      print("Error fetching words: $e");
+    }
+    return [];
+  }
 
   // Fetch data method
   Future<List<NewsItem>> fetchRssFeed(String url) async {
@@ -74,17 +109,10 @@ class _TodaysPageState extends State<TodaysPage> {
     });
 
     try {
-      futureNewsItems = fetchMultipleRssFeeds([
-        'https://www.dinakaran.com/feed/',
-        'https://timesofindia.indiatimes.com/rss.cms',
-        'https://www.thanthitv.com/feed',
-        'https://timesofindia.indiatimes.com/rssfeeds/1221656.cms',
-        'https://www.indiatoday.in/rss',
-        'https://feeds.bbci.co.uk/news/world/rss.xml',
-        'https://www.hindutamil.in/rss',
-        'https://www.dinamani.com/rss',
-        'https://feeds.nbcnews.com/nbcnews/public/news',
-      ]);
+      futureNewsItems = fetchMultipleRssFeeds(
+          channelList[widget.channel] == null
+              ? ['https://www.dinakaran.com/feed/']
+              : channelList[widget.channel]!);
     } catch (e) {
       setState(() {
         errorMessage = 'Failed to refresh news. Please try again later.';
@@ -100,6 +128,34 @@ class _TodaysPageState extends State<TodaysPage> {
   void initState() {
     super.initState();
     _refreshNews();
+    _scrollController = ScrollController();
+
+    // Set up the timer for automatic scrolling
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+      if (_scrollController.hasClients) {
+        double maxScroll = _scrollController.position.maxScrollExtent;
+        double currentScroll = _scrollController.position.pixels;
+
+        // If the scroll position has reached the maximum, reset to the beginning
+        if (currentScroll == maxScroll) {
+          _scrollController.jumpTo(0);
+        } else {
+          // Scroll by a certain amount to the right
+          _scrollController.animateTo(
+            currentScroll + 360.0,
+            duration: Duration(seconds: 1),
+            curve: Curves.easeInOut,
+          );
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _scrollController.dispose(); // Dispose of the scroll controller
+    super.dispose();
   }
 
   @override
@@ -111,7 +167,40 @@ class _TodaysPageState extends State<TodaysPage> {
               onRefresh: _refreshNews,
               child: ListView(
                 children: [
-                  _buildSectionHeader('Today\'s News'),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      HomePage(toggleTheme: () {})),
+                            );
+                            print("Navigation to NewsListScreen clicked");
+                          },
+                          icon: const Icon(Icons.arrow_back),
+                          iconSize: 25,
+                        ),
+                        Text(
+                          'Channels',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildChannels(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      widget.channel,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                  ),
                   _buildAllNews(),
                 ],
               ),
@@ -205,7 +294,7 @@ class _TodaysPageState extends State<TodaysPage> {
                   item.title.length > 50
                       ? "${item.title.substring(0, 50)}..." // Truncate text after 2 lines
                       : item.title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -236,9 +325,9 @@ class _TodaysPageState extends State<TodaysPage> {
             ),
           );
         } else if (snapshot.hasError) {
-          return _buildSectionError('Today\'s News');
+          return _buildSectionError(widget.channel);
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildEmptySection('Today\'s News');
+          return _buildEmptySection(widget.channel);
         }
         return _buildNewsList(snapshot.data!);
       },
@@ -253,12 +342,12 @@ class _TodaysPageState extends State<TodaysPage> {
           const Icon(Icons.error_outline, color: Colors.orange),
           const SizedBox(height: 8),
           Text(
-            'Unable to load $section',
+            'Upgrade Pro to Continue',
             style: const TextStyle(color: Colors.red),
           ),
           TextButton(
             onPressed: _refreshNews,
-            child: const Text('Retry'),
+            child: const Text(''),
           ),
         ],
       ),
@@ -274,55 +363,6 @@ class _TodaysPageState extends State<TodaysPage> {
           const SizedBox(height: 8),
           Text('No $section available'),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHorizontalList(List<NewsItem> newsItems) {
-    return SizedBox(
-      height: 150,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: newsItems.length,
-        itemBuilder: (context, index) {
-          final newsItem = newsItems[index];
-          return Container(
-            width: 200,
-            margin: const EdgeInsets.only(left: 16),
-            child: Card(
-              elevation: 5,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildNewsImage(newsItem.imageUrl, 100.0),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      newsItem.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
       ),
     );
   }
@@ -355,6 +395,67 @@ class _TodaysPageState extends State<TodaysPage> {
             color: Colors.grey[300],
             child: const Icon(Icons.image_not_supported),
           );
+  }
+
+  Widget _buildChannels() {
+    final channels = [
+      'Dhinakaran',
+      'Hindu Tamil',
+      'BBC',
+      'NBC',
+      'Vikatan',
+      'Times Of India'
+    ];
+    final channelsImages = [
+      'Dhinakaran.png',
+      'Hindu.png',
+      'BBC.png',
+      'NBC.jpg',
+      'TOI.png',
+      'Vikatan.png',
+    ];
+
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: channels.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              // Navigate to ChannelPage with the selected channel
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChannelPage(channel: channels[index]),
+                ),
+              );
+            },
+            child: Container(
+              width: 100,
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage:
+                        AssetImage('assets/images/${channelsImages[index]}'),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    channels[index],
+                    style: TextStyle(
+                      fontWeight: widget.channel == channels[index]
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildNewsList(List<NewsItem> newsItems) {

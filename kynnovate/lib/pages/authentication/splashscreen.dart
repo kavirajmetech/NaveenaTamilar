@@ -24,6 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       if (user != null) {
         if (mounted) {
+          _fetchUserData(user.uid);
           Future.delayed(Duration(seconds: 1), () {
             if (context.mounted) {
               Navigator.pushReplacement(
@@ -48,6 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     });
   }
+  
 
   Future<void> _fetchUserData(String userId) async {
     if (globalUserId == null || globalUsername == null) {
@@ -57,7 +59,6 @@ class _SplashScreenState extends State<SplashScreen> {
         if (user != null) {
           globalUserId = user.uid;
           globalUsername = user.displayName ?? 'User';
-          print("Fetched user data: $globalUsername ($globalUserId)");
         } else {
           print("User details are not available.");
         }
@@ -66,7 +67,6 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/splashscreen.png',
+              'assets/kyn.png',
               height: 100,
             ),
             SizedBox(height: 20),

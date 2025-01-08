@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:kynnovate/globals.dart';
 import 'package:kynnovate/pages/authentication/form.dart';
 import 'splashscreen.dart';
 
@@ -21,24 +20,93 @@ class _SignUpPageState extends State<SignUpPage> {
 
   String _selectedState = "Select State";
   String _selectedDistrict = "Select District";
-  List<String> states = ["Select State", "State 1", "State 2", "State 3"];
+  List<String> states = [
+    "Select State",
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi",
+    "Jammu and Kashmir",
+    "Ladakh",
+    "Lakshadweep",
+    "Puducherry"
+  ];
   List<String> districts = [
     "Select District",
-    "District 1",
-    "District 2",
-    "District 3"
+    "Ariyalur",
+    "Chengalpattu",
+    "Chennai",
+    "Coimbatore",
+    "Cuddalore",
+    "Dharmapuri",
+    "Dindigul",
+    "Erode",
+    "Kallakurichi",
+    "Kanchipuram",
+    "Kanyakumari",
+    "Karur",
+    "Krishnagiri",
+    "Madurai",
+    "Mayiladuthurai",
+    "Nagapattinam",
+    "Namakkal",
+    "Nilgiris",
+    "Perambalur",
+    "Pudukkottai",
+    "Ramanathapuram",
+    "Ranipet",
+    "Salem",
+    "Sivaganga",
+    "Tenkasi",
+    "Thanjavur",
+    "Theni",
+    "Thiruvallur",
+    "Thiruvarur",
+    "Thoothukudi",
+    "Tiruchirappalli",
+    "Tirunelveli",
+    "Tirupattur",
+    "Tiruppur",
+    "Tiruvannamalai",
+    "Vellore",
+    "Viluppuram",
+    "Virudhunagar"
   ];
-
   Future<void> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        return; // User canceled the sign-in process
-      }
+      if (googleUser == null) return; // User canceled sign-in
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -46,22 +114,41 @@ class _SignUpPageState extends State<SignUpPage> {
 
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
-
       final User? user = userCredential.user;
 
       if (user != null) {
-        globalUserId = user.uid;
-        globalUsername = user.displayName;
-        globalEmail = user.email;
-
+        await _saveUserToFirestore(user.uid, user.displayName ?? "Google User",
+            user.email ?? "", "Google Sign-In");
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => CollectDetails()),
+          MaterialPageRoute(builder: (context) => SplashScreen()),
         );
       }
     } catch (e) {
-      print("Error signing in with Google: $e");
-      _showErrorDialog("Error signing in with Google: $e");
+      _showErrorDialog("Error: ${e.toString()}");
+    }
+  }
+
+  Future<void> _saveUserToFirestore(
+      String uid, String name, String email, String authMethod) async {
+    final userDoc = FirebaseFirestore.instance.collection('User').doc(uid);
+    final userExists = await userDoc.get();
+    if (!userExists.exists) {
+      await userDoc.set({
+        'name': name,
+        'email': email,
+        'authMethod': authMethod,
+        'state': _selectedState,
+        'district': _selectedDistrict,
+        'likedcontent': [],
+        'likedauthors': [],
+        'likednewschannels': [],
+        'profileImageUrl': "",
+        'comments': [],
+        'subscriptions': [],
+        'Events': [],
+        'EventsRegistered': [],
+      });
     }
   }
 
@@ -71,15 +158,58 @@ class _SignUpPageState extends State<SignUpPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          content: Text(
-            message,
-            style: const TextStyle(color: Colors.red),
-          ),
+          backgroundColor: Colors.white,
+          title: const Text("Error"),
+          content: Text(message, style: const TextStyle(color: Colors.red)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
         );
       },
     );
+  }
+
+  void _signUpWithEmail() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final firstName = _firstNameController.text.trim();
+    final lastName = _lastNameController.text.trim();
+
+    if (firstName.isEmpty ||
+        lastName.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        _selectedState == "Select State" ||
+        _selectedDistrict == "Select District") {
+      _showErrorDialog("Please fill in all the fields.");
+      return;
+    }
+
+    if (!RegExp(r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$")
+        .hasMatch(email)) {
+      _showErrorDialog("Invalid email format.");
+      return;
+    }
+
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      await _saveUserToFirestore(userCredential.user!.uid,
+          "$firstName $lastName", email, "Email/Password");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SplashScreen()),
+      );
+    } catch (e) {
+      _showErrorDialog("Sign-up failed. Error: ${e.toString()}");
+    }
   }
 
   @override
@@ -95,15 +225,13 @@ class _SignUpPageState extends State<SignUpPage> {
           Container(
             width: width,
             height: height,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/signup.png'),
                 fit: BoxFit.cover,
               ),
             ),
-            child: Container(
-              color: Colors.black.withOpacity(0.1),
-            ),
+            child: Container(color: Colors.black.withOpacity(0.1)),
           ),
           SingleChildScrollView(
             child: Padding(
@@ -112,253 +240,85 @@ class _SignUpPageState extends State<SignUpPage> {
                 vertical: height * 0.1,
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(height: height * 0.05),
                   const Text(
                     'Sign up',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 10.0,
-                          offset: Offset(5, 5),
-                        ),
-                      ],
-                    ),
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Create your new account',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white70,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 40),
-
-                  // First Name and Last Name Row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: TextField(
-                            controller: _firstNameController,
-                            decoration: InputDecoration(
-                              labelText: 'First name',
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 14.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: TextField(
-                            controller: _lastNameController,
-                            decoration: InputDecoration(
-                              labelText: 'Last name',
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 14.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 20),
-
-                  // Email Field
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 14.0),
-                      ),
-                    ),
-                  ),
+                  _buildTextField(_firstNameController, "First Name"),
                   const SizedBox(height: 20),
-
-                  // Password Field
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: TextField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 14.0),
-                      ),
-                    ),
-                  ),
+                  _buildTextField(_lastNameController, "Last Name"),
                   const SizedBox(height: 20),
-
-                  // State Dropdown
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: DropdownButton<String>(
-                      value: _selectedState,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedState = newValue!;
-                        });
-                      },
-                      items:
-                          states.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                  _buildTextField(_emailController, "Email"),
                   const SizedBox(height: 20),
-
-                  // District Dropdown
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: DropdownButton<String>(
-                      value: _selectedDistrict,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedDistrict = newValue!;
-                        });
-                      },
-                      items: districts
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                  _buildTextField(_passwordController, "Password",
+                      obscureText: true),
+                  const SizedBox(height: 20),
+                  _buildDropdown("Select State", states, _selectedState,
+                      (newValue) => setState(() => _selectedState = newValue)),
+                  const SizedBox(height: 20),
+                  _buildDropdown(
+                      "Select District",
+                      districts,
+                      _selectedDistrict,
+                      (newValue) =>
+                          setState(() => _selectedDistrict = newValue)),
                   const SizedBox(height: 30),
-
-                  // Sign Up Button
                   ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        final email = _emailController.text.trim();
-                        final password = _passwordController.text.trim();
-                        final firstName = _firstNameController.text.trim();
-                        final lastName = _lastNameController.text.trim();
-
-                        UserCredential userCredential =
-                            await _auth.createUserWithEmailAndPassword(
-                          email: email,
-                          password: password,
-                        );
-
-                        globalUserId = userCredential.user!.uid;
-                        globalUsername = "$firstName $lastName";
-                        globalEmail = email;
-                        await FirebaseFirestore.instance
-                            .collection('User')
-                            .doc(globalUserId)
-                            .set({
-                          'name': globalUsername,
-                          'email': email ?? "",
-                          'state': [_selectedState] ?? [""],
-                          'district': [_selectedDistrict] ?? [""],
-                          'likedcontent': [],
-                          'likedauthors': [],
-                          'likednewschannels': [],
-                          'profileImageUrl': "",
-                          'comments': [],
-                          'subscriptions': []
-                        });
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SplashScreen()),
-                        );
-                      } catch (e) {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              backgroundColor: Colors.transparent,
-                              elevation: 0,
-                              content: Text(
-                                e.toString(),
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 15.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      backgroundColor: const Color.fromARGB(255, 83, 100, 147),
-                    ),
-                    child: const Text(
-                      'Sign up',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
+                    onPressed: _signUpWithEmail,
+                    child:
+                        const Text("Sign up", style: TextStyle(fontSize: 18)),
                   ),
-                  SizedBox(height: 20),
-
+                  const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: _signInWithGoogle,
-                    icon: const Icon(Icons.g_mobiledata, size: 24),
-                    label: const Text(
-                      'Continue with Google',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 15.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      backgroundColor: Colors.redAccent,
-                    ),
+                    icon: const Icon(Icons.g_mobiledata),
+                    label: const Text("Continue with Google"),
                   ),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label,
+      {bool obscureText = false}) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.9),
+      ),
+    );
+  }
+
+  Widget _buildDropdown(String hint, List<String> items, String selectedValue,
+      ValueChanged<String> onChanged) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: DropdownButton<String>(
+        value: selectedValue,
+        isExpanded: true,
+        onChanged: (value) => onChanged(value!),
+        items: items.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
       ),
     );
   }

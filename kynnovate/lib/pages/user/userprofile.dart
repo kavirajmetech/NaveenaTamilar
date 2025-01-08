@@ -315,6 +315,7 @@ class _UserprofileState extends State<Userprofile> {
   }
 
   Future<void> _addupdateDatabase(String key, String item) async {
+    // // Replace this with actual database logic.
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -335,6 +336,7 @@ class _UserprofileState extends State<Userprofile> {
         SnackBar(content: Text('Failed to remove $item')),
       );
     }
+    // await Future.delayed(Duration(milliseconds: 500)); // Simulating DB delay.
     print('Database updated: $key -> $item');
   }
 
@@ -355,6 +357,7 @@ class _UserprofileState extends State<Userprofile> {
           globalUserData[key] = updatedList;
         });
 
+        // Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$item removed successfully')),
         );
@@ -594,6 +597,12 @@ class _UserprofileState extends State<Userprofile> {
               ],
             ),
             SizedBox(height: 5),
+            // Text(
+            //   value,
+            //   style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            //   maxLines: 3,
+            //   overflow: TextOverflow.ellipsis,
+            // ),
           ],
         ),
       ),

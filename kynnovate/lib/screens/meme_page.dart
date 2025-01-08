@@ -11,6 +11,7 @@ class MemePage extends StatefulWidget {
 class _MemePageState extends State<MemePage> {
   Future<List<Meme>> _fetchMemes() async {
     List<String> rssUrls = [
+      'https://tamil.news18.com/commonfeeds/v1/tam/rss/memes.xml',
       'https://tamil.oneindia.com/rss/feeds/tamil-memes-fb.xml',
       'https://feeds.feedburner.com/Hindu_Tamil_cartoon'
     ];
@@ -26,11 +27,13 @@ class _MemePageState extends State<MemePage> {
           String? imageUrl;
           String? sourceLink;
 
+          // Parse <media:content>
           final mediaContent = item.findElements('media:content').firstOrNull;
           if (mediaContent != null) {
             imageUrl = mediaContent.getAttribute('url');
           }
 
+          // Parse <content:encoded>
           if (imageUrl == null || imageUrl.isEmpty) {
             final content = item.findElements('content:encoded').firstOrNull;
             if (content != null) {
@@ -40,6 +43,7 @@ class _MemePageState extends State<MemePage> {
               if (match != null) {
                 imageUrl = match.group(1);
               }
+              // Extract source link
               final sourceRegex = RegExp(r'<a[^>]+href="([^"]+)"[^>]*>Source');
               final sourceMatch = sourceRegex.firstMatch(contentString);
               if (sourceMatch != null) {
@@ -49,10 +53,7 @@ class _MemePageState extends State<MemePage> {
           }
 
           final title = item.findElements('title').first.text;
-          return Meme(
-              imageUrl: imageUrl ?? '',
-              sourceLink: sourceLink ?? '',
-              name: title);
+          return Meme(imageUrl: imageUrl ?? '', sourceLink: sourceLink ?? '', name: title);
         }).toList());
       } else {
         throw Exception('Failed to load memes from $url');

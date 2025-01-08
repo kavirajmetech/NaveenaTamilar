@@ -227,6 +227,14 @@ Map<String, String> homePage = {
   "kn": "ಮುಖ್ಯ ಪುಟ",
   "hi": "होम पेज",
 };
+Map<String, String> recommended = {
+  "en": "Recommended",
+  "ta": "Recommended",
+  "ml": "Recommended",
+  "te": "Recommended",
+  "kn": "Recommended",
+  "hi": "Recommended"
+};
 Map<String, String> seeall = {
   "en": "See All",
   "ta": "அனைத்தையும் காண்க",
@@ -243,7 +251,14 @@ Map<String, String> categories = {
   "kn": "ವರ್ಗಗಳು",
   "hi": "श्रेणियाँ",
 };
-
+// Map<String, String> location = {
+//   "en": "Location",
+//   "ta": "இடம்",
+//   "ml": "ലൊക്കേഷൻ",
+//   "te": "స్థానం",
+//   "kn": "ಸ್ಥಳ",
+//   "hi": "स्थान",
+// };
 Map<String, String> today = {
   "en": "Today's",
   "ta": "இன்றைய",
@@ -252,14 +267,7 @@ Map<String, String> today = {
   "kn": "ಇಂದಿನ",
   "hi": "आज का",
 };
-Map<String, String> latest = {
-  "en": "Latest",
-  "ta": "சமீபத்திய",
-  "ml": "ഏറ്റവും പുതിയ",
-  "te": "తాజా",
-  "kn": "ಇತ್ತೀಚಿನದು",
-  "hi": "नवीनतम",
-};
+
 Map<String, String> children = {
   "en": "Children",
   "ta": "குழந்தைகள்",
@@ -267,6 +275,131 @@ Map<String, String> children = {
   "te": "పిల్లలు",
   "kn": "ಮಕ್ಕಳು",
   "hi": "बच्चे",
+};
+// Map<String, String> children = {
+//   "en": "Children",
+//   "ta": "குழந்தைகள்",
+//   "ml": "കുട്ടികൾ",
+//   "te": "పిల్లలు",
+//   "kn": "ಮಕ್ಕಳು",
+//   "hi": "बच्चे",
+// };
+
+Map<String, String> preparation = {
+  "en": "Preparation",
+  "ta": "தயாரிப்பு",
+  "ml": "സജ്ജീകരണം",
+  "te": "సిద్ధత",
+  "kn": "ತಯಾರಿ",
+  "hi": "तैयारी",
+};
+
+Map<String, String> seeAll = {
+  "en": "See All",
+  "ta": "அனைத்தையும் காண்க",
+  "ml": "എല്ലാം കാണുക",
+  "te": "అన్నీ చూడండి",
+  "kn": "ಎಲ್ಲವನ್ನೂ ನೋಡು",
+  "hi": "सभी देखें",
+};
+
+Map<String, String> latest = {
+  "en": "Latest",
+  "ta": "சமீபத்தியது",
+  "ml": "ഏറ്റവും പുതിയത്",
+  "te": "తాజా",
+  "kn": "ಇತ್ತೀಚಿನ",
+  "hi": "नवीनतम",
+};
+
+Map<String, String> filter = {
+  "en": "Filter",
+  "ta": "வடிகட்டல்",
+  "ml": "ഫിൽട്ടർ",
+  "te": "ఫిల్టర్",
+  "kn": "ಫಿಲ್ಟರ್",
+  "hi": "फ़िल्टर",
+};
+
+Map<String, String> fm = {
+  "en": "FM",
+  "ta": "எஃப்.எம்",
+  "ml": "എഫ്.എം",
+  "te": "ఎఫ్.ఎమ్",
+  "kn": "ಎಫ್.ಎಮ್",
+  "hi": "एफएम",
+};
+
+Map<String, String> channels = {
+  "en": "Channels",
+  "ta": "சேனல்கள்",
+  "ml": "ചാനലുകൾ",
+  "te": "ఛానెల్స్",
+  "kn": "ಚಾನೆಲ್‌ಗಳು",
+  "hi": "चैनल्स",
+};
+
+// Map<String, String> categories = {
+//   "en": "Categories",
+//   "ta": "வகைகள்",
+//   "ml": "വിഭാഗങ്ങൾ",
+//   "te": "వర్గాలు",
+//   "kn": "ವರ್ಗಗಳು",
+//   "hi": "श्रेणियाँ",
+// };
+
+Map<String, String> locations = {
+  "en": "Locations",
+  "ta": "இருப்பிடங்கள்",
+  "ml": "സ്ഥലങ്ങൾ",
+  "te": "ప్రదేశాలు",
+  "kn": "ಸ್ಥಳಗಳು",
+  "hi": "स्थान",
+};
+
+Map<String, String> saved = {
+  "en": "Saved",
+  "ta": "சேமிக்கப்பட்டது",
+  "ml": "സംരക്ഷിച്ചത്",
+  "te": "సేవ్ చేయబడింది",
+  "kn": "ಉಳಿಸಲಾಗಿದೆ",
+  "hi": "सहेजा गया",
+};
+
+// Map<String, String> search = {
+//   "en": "Search",
+//   "ta": "தேடு",
+//   "ml": "തിരയുക",
+//   "te": "వెతకండి",
+//   "kn": "ಹುಡುಕು",
+//   "hi": "खोज",
+// };
+
+Map<String, String> all = {
+  "en": "All",
+  "ta": "அனைத்து",
+  "ml": "എല്ലാം",
+  "te": "అన్ని",
+  "kn": "ಎಲ್ಲಾ",
+  "hi": "सभी",
+};
+
+Map<String, String> tamil = {
+  "en": "Tamil",
+  "ta": "தமிழ்",
+  "ml": "തമിഴ്",
+  "te": "తమిళం",
+  "kn": "ತಮಿಳು",
+  "hi": "तमिल",
+};
+
+Map<String, String> english = {
+  "en": "English",
+  "ta": "ஆங்கிலம்",
+  "ml": "ഇംഗ്ലീഷ്",
+  "te": "ఆంగ్లం",
+  "kn": "ಇಂಗ್ಲಿಷ್",
+  "hi": "अंग्रेज़ी",
 };
 
 Map<String, String> favourite = {

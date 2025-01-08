@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class EnlargedMemeScreen extends StatefulWidget {
   final String imageUrl;
@@ -20,8 +21,23 @@ class _EnlargedMemeScreenState extends State<EnlargedMemeScreen> {
     });
   }
 
-  void _shareMeme() {
-    Share.share('Check out this meme! ${widget.imageUrl}\nSource: ${widget.sourceLink}');
+  Future<void> _shareMeme() async {
+    try {
+      // Download the image file
+      final cacheManager = DefaultCacheManager();
+      final file = await cacheManager.getSingleFile(widget.imageUrl);
+
+      final xFile = XFile(file.path);
+      await Share.shareXFiles(
+        [xFile],
+        text: 'Check out this meme! \nSource: ${widget.sourceLink}',
+      );
+    } catch (e) {
+      print('Error sharing meme: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to share the meme. Please try again.')),
+      );
+    }
   }
 
   @override
@@ -51,17 +67,17 @@ class _EnlargedMemeScreenState extends State<EnlargedMemeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Column(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.thumb_up),
-                      onPressed: _incrementLike,
+                    // children: [
+                    //   IconButton(
+                    //     icon: Icon(Icons.thumb_up),
+                    //     onPressed: _incrementLike,
+                    //   ),
+                    //   Text(
+                    //     '$_likeCount',
+                    //     style: TextStyle(fontSize: 16),
+                    //   ),
+                    // ],
                     ),
-                    Text(
-                      '$_likeCount',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
                 SizedBox(width: 20),
                 Column(
                   children: [

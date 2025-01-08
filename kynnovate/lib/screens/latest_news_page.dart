@@ -20,7 +20,7 @@ class _LatestNewsPageState extends State<LatestNewsPage> {
   }
 
   Future<List<NewsItem>> _loadLatestNews() async {
-    final String url = "https://www.dinakaran.com/feed/"; // RSS URL
+    final String url = "https://www.dinakaran.com/feed/";
     return await fetchRssFeed(url);
   }
 
@@ -103,7 +103,6 @@ class _LatestNewsPageState extends State<LatestNewsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Display news image
                       ClipRRect(
                         borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(10)),
@@ -123,7 +122,6 @@ class _LatestNewsPageState extends State<LatestNewsPage> {
                           },
                         ),
                       ),
-                      // News title and description
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
